@@ -49,6 +49,10 @@ describe("agent spec", () => {
       if (config.type !== "webhook") throw new Error("expected webhook tools only");
       expect(config.apiSchema.requestHeaders?.["x-lightline-tool-key"]).toEqual({ secretId: "sec_1" });
       expect(config.apiSchema.requestBodySchema?.properties?.call_sid).toMatchObject({ dynamicVariable: "call_sid" });
+      // ElevenLabs answers 422 when a platform-filled field also carries a description.
+      for (const property of Object.values(config.apiSchema.requestBodySchema?.properties ?? {})) {
+        if ("dynamicVariable" in property) expect(property).not.toHaveProperty("description");
+      }
       expect(config.apiSchema.url.startsWith("https://lightline.example.test/api/agent/tools/")).toBe(true);
     }
     expect(spec.conversationConfig.agent?.prompt?.toolIds).toEqual(["tool_1"]);
@@ -86,24 +90,29 @@ describe("agent spec", () => {
       expect(line).toContain("This call is recorded and transcribed");
       expect(line).toContain("by our AI service providers");
       // Short enough to sit through: the greeting can't be talked over. Amy's Josh
-      // sentence (2026-10-29) costs about 13 words; naming where Amy is, 7 more.
+      // sentence (2026-10-29) costs about 13 words; naming where Amy is, 7 more;
+      // ending on the first question saves the caller a turn, 7 more.
       const amyNamed = entry === "owner_unavailable" || entry === "owner_busy";
-      expect(line.split(/\s+/).length).toBeLessThanOrEqual(amyNamed ? 58 : 51);
+      expect(line.split(/\s+/).length).toBeLessThanOrEqual(amyNamed ? 68 : 61);
+      expect(line).toMatch(/What are you looking to have done\?$/);
       expect(line).toContain("so Josh knows how to help on the callback");
       expect(scanConversation([{ role: "agent", text: line }]).violations).toEqual([]);
     }
     // Amy is named only when we know where she is (Amy, 2026-10-29).
-    expect(openingLine(config, "owner_unavailable")).toContain("Amy's tied up at the moment, but I can get a few details");
-    expect(openingLine(config, "owner_busy")).toContain("Amy's on another call right now, but I can get a few details");
+    expect(openingLine(config, "owner_unavailable")).toContain("Amy's tied up at the moment, but I'd be happy to get a few details");
+    expect(openingLine(config, "owner_busy")).toContain("Amy's on another call right now, but I'd be happy to get a few details");
     for (const entry of ["after_hours", "ai_first"] as Entry[]) expect(openingLine(config, entry)).not.toContain("Amy");
-    expect(openingLine(config, "ai_first")).toMatch(/^Hi, you've reached The Christmas Light Guys\. I'm their AI assistant/);
+    expect(openingLine(config, "ai_first")).toMatch(/^Hi, thank you for calling The Christmas Light Guys\. I'm their AI assistant/);
     expect(openingLine(config, "handoff_failed")).toContain("You're back with the AI assistant");
   });
 
   it("the prompt carries Amy's lines: Google Maps, the callback time, and don't guess", () => {
     for (const must of [
-      "Is your home pretty easy to see on Google Maps, or is it hidden by trees?",
-      "What's the best time for {{callback_name}} to call you back?",
+      "Is the front of your home and the roofline pretty easy to see on Google Maps, or is it mostly hidden by trees?",
+      "When would be the best time for {{callback_name}} to give you a call?",
+      "Is the number you're calling from the best one for {{callback_name}} to reach you?",
+      "I want to make sure I have the street right.",
+      "I've got everything saved for {{callback_name}}",
       "I don't want to give you the wrong information on that. I'll make sure {{callback_name}} sees the question before the callback.",
       "Thanks, John. I've got the roofline and two trees, and after four tomorrow for the callback. What's the property address?",
       "Don't ask about outdoor plugs, email, a budget or a day for a site visit.",
@@ -111,7 +120,9 @@ describe("agent spec", () => {
       expect(prompt).toContain(must);
     }
     // The company's assistant only: no other company named, no stock praise held up as an example.
-    for (const never of ["Sublime", "Fridge", "Perfect.", "the companies {{owner_name}} runs"]) expect(prompt).not.toContain(never);
+    for (const never of ["Sublime", "Fridge", "Perfect.", "the companies {{owner_name}} runs", "I'm sending this"]) {
+      expect(prompt).not.toContain(never);
+    }
   });
 
   it("asks for the Google Maps answer as yes, no or unsure, and no longer offers plugs or a site-visit day", () => {

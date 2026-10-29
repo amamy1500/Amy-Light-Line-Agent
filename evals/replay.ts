@@ -80,9 +80,9 @@ const LEAD_FIELDS: readonly FactField[] = [
 
 /** What a compliant agent says once it has flagged an urgent call (tools.ts urgentInstruction, owner "Amy"). */
 const URGENT_LINES: Record<UrgentKind, string[]> = {
-  safety: [SAFETY_LINE, "Please stay away from the lights and the wires. I've sent this to Amy as urgent."],
-  service_issue: ["Is anything sparking, smoking or hot?", "Got it. I've sent this to Amy as urgent, so it's in front of Amy now."],
-  complaint: ["I hear you, and I'm sorry.", "I can't handle billing or claims myself, but I've sent this to Amy as urgent."],
+  safety: [SAFETY_LINE, "Please stay away from the lights and the wires. I've marked this urgent for Amy."],
+  service_issue: ["Is anything sparking, smoking or hot?", "Got it. I've marked this urgent for Amy, so it's at the top of the list."],
+  complaint: ["I hear you, and I'm sorry.", "I can't handle billing or claims myself, but I've marked this urgent for Amy."],
   threat: ["I can't continue if this goes on.", "I'm ending this call now."],
   official: ["I'll get this to Amy right away. What's the best number to reach you?"],
 };

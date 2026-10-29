@@ -87,7 +87,7 @@ describe("Amy is already on a call", () => {
       const twiml = await handleInbound({ CallSid: sid(), From: caller(), To: TV }, deps());
       expect(twiml).not.toContain("<Dial");
       expect(twiml).toContain('<Parameter name="entry" value="owner_busy"/>');
-      expect(twiml).toContain("Amy's on another call right now, but I can get a few details");
+      expect(twiml).toContain("Amy's on another call right now, but I'd be happy to get a few details");
     } finally {
       await first.hangUp();
     }

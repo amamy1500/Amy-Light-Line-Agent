@@ -60,9 +60,10 @@ function bodySchema(name: ToolName): ElevenLabs.ObjectJsonSchemaPropertyInput {
       ...(prop.enum ? { enum: prop.enum.map(String) } : {}),
     };
   }
-  // Filled by the platform from our dynamic variables, never by the model.
-  properties.call_sid = { type: "string", description: "call reference", dynamicVariable: "call_sid" };
-  properties.conversation_id = { type: "string", description: "conversation reference", dynamicVariable: "system__conversation_id" };
+  // Filled by the platform from our dynamic variables, never by the model. ElevenLabs
+  // rejects a description alongside dynamicVariable (422, 2026-10-29): one or the other.
+  properties.call_sid = { type: "string", dynamicVariable: "call_sid" };
+  properties.conversation_id = { type: "string", dynamicVariable: "system__conversation_id" };
   return { type: "object", description: `${name} arguments`, properties, required: [...(json.required ?? []), "call_sid"] };
 }
 
@@ -199,7 +200,10 @@ export function buildAgentRequest(
       turn: {
         turnTimeout: 7,
         silenceEndCallTimeout: 60,
-        turnEagerness: "normal",
+        // Unhurried: give callers time to finish and think (first live call, 2026-10-29).
+        turnEagerness: "patient",
+        // Waits for callers spelling a street or reading out digits.
+        spellingPatience: "auto",
         interruptionIgnoreTerms: spanish ? [...BACKCHANNELS, ...BACKCHANNELS_ES] : BACKCHANNELS,
         interruptionIgnoreTermLanguages: spanish ? ["en", "es"] : ["en"],
         mergeWithDefaultIgnoreTerms: true,
@@ -212,13 +216,14 @@ export function buildAgentRequest(
       // With Spanish on, the multilingual flash v2.5 is required.
       // Starting values for a phone line (docs/research/amy-voice-clone.md); tune by blind phone test.
       // Stability 0.6, up from 0.55: Amy wants calm and steady, never bubbly (2026-10-29).
+      // Speed 0.9: the first live call sounded rushed; about 140 words a minute is easy to follow on a phone.
       tts: {
         voiceId: options.voiceId,
         modelId: spanish ? "eleven_flash_v2_5" : "eleven_flash_v2",
         agentOutputAudioFormat: "ulaw_8000",
         stability: 0.6,
         similarityBoost: 0.8,
-        speed: 1.0,
+        speed: 0.9,
       },
       asr: { userInputAudioFormat: "ulaw_8000", keywords: asrKeywords(config) },
     },

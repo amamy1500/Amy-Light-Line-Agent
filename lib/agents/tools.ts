@@ -83,14 +83,14 @@ function urgentInstruction(kind: UrgentKind, config: BusinessConfig): string {
   switch (kind) {
     case "safety":
       return (
-        `If you haven't yet, say first: "${SAFETY_LINE}" Then: "Please stay away from the lights and the wires. I've sent this to ${owner} as urgent." ` +
+        `If you haven't yet, say first: "${SAFETY_LINE}" Then: "Please stay away from the lights and the wires. I've marked this urgent for ${owner}." ` +
         `If a power line is down, add: "To report a downed line, call ${config.safety.utilityName} at ${spokenPhone(config.safety.utilityPhone)}, ` +
         `or your own electric company if you're outside their area." Give no electrical advice. If they're safe, get the address and the best number for ${owner}.`
       );
     case "service_issue":
-      return `Say: "Got it. I've sent this to ${owner} as urgent, so it's in front of ${owner} now." Promise no time and give no repair advice. Get the address and the best number to call back.`;
+      return `Say: "Got it. I've marked this urgent for ${owner}, so it's at the top of the list." Promise no time and give no repair advice. Get the address and the best number to call back.`;
     case "complaint":
-      return `Say: "I'm sorry about that. I can't handle billing or claims myself, but I've sent this to ${owner} as urgent." Admit no fault and mention no refund or amount. Get the best number to call back.`;
+      return `Say: "I'm sorry about that. I can't handle billing or claims myself, but I've marked this urgent for ${owner}." Admit no fault and mention no refund or amount. Get the best number to call back.`;
     case "threat":
       return `Say once, calmly: "I can't continue if this goes on." If it goes on: "I'm ending this call now." Then call finish_call with outcome abusive and end the call.`;
     case "official":
@@ -401,9 +401,10 @@ export const TOOLS = {
         body: {
           task_id: taskId,
           // Amy, 2026-10-29: never promise a call at an exact time unless it is confirmed.
+          // "Saved" is what this tool did; whether anyone was notified is not known here.
           instruction: args.window
-            ? `Say you've noted ${args.window} as the best time for ${callback}. Don't promise a call at that exact time.`
-            : `Say you're sending this to ${callback} now. Don't promise a time.`,
+            ? `Say you've got everything saved for ${callback}, with ${args.window} as the best time. Don't promise a call at that exact time.`
+            : `Say you've got everything saved for ${callback}. Don't promise a time.`,
         },
       };
     },

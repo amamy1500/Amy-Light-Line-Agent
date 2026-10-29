@@ -111,7 +111,7 @@ describe("a company's own number", () => {
     const call = sid();
     const twiml = await handleInbound({ CallSid: call, From: caller(), To: LINES.fridge }, voice());
     expect(param(twiml, "company_name")).toBe("The Fridge");
-    expect(param(twiml, "opening")).toContain("Hi, you've reached The Fridge.");
+    expect(param(twiml, "opening")).toContain("Hi, thank you for calling The Fridge.");
     expect(param(twiml, "company_context")).toMatch(/vending machine/);
     const saved = await tool(call, "save_lead_details", { service_requested: "a drinks machine for our break room" });
     expect(saved.body.still_needed).toEqual(["property_type", "property_address", "caller_name", "notes", "callback_window", "lead_source"]);

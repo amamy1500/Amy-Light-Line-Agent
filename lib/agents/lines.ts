@@ -22,10 +22,13 @@ export function dontGuessLine(name: string): string {
   return `I don't want to give you the wrong information on that. I'll make sure ${name} sees the question before the callback.`;
 }
 
-/** The question Amy asks about every property (2026-10-29). */
-export const MAPS_QUESTION = "Is your home pretty easy to see on Google Maps, or is it hidden by trees?";
+/**
+ * The question Amy asks about every property (2026-10-29), naming the front
+ * and the roofline since that is what Josh looks at (after the first live call).
+ */
+export const MAPS_QUESTION = "Is the front of your home and the roofline pretty easy to see on Google Maps, or is it mostly hidden by trees?";
 
-/** The callback question, in Amy's words (2026-10-29). `name` is who calls back. */
+/** The callback question (Amy, 2026-10-29), asked a little more gently. `name` is who calls back. */
 export function callbackQuestion(name: string): string {
-  return `What's the best time for ${name} to call you back?`;
+  return `When would be the best time for ${name} to give you a call?`;
 }
