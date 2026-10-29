@@ -1,0 +1,1015 @@
+[
+  {
+    "id": "F01",
+    "fact": "Brand name: The Christmas Light Guys.",
+    "quote": "The Christmas Light Guys",
+    "source_url": "https://thechristmaslightguys.com/contact-christmas-light-austin.php",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": false
+  },
+  {
+    "id": "F02",
+    "fact": "Brand name: The Light Guys.",
+    "quote": "Our sister company, The Light Guys",
+    "source_url": "https://thechristmaslightguys.com/about-the-christmas-light-guys.php",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": false
+  },
+  {
+    "id": "F03",
+    "fact": "The Christmas Light Guys and The Light Guys are sister companies.",
+    "quote": "Our sister company, The Light Guys provides a full range of year-round professional lighting services.",
+    "source_url": "https://thechristmaslightguys.com/about-the-christmas-light-guys.php",
+    "sites": [
+      "clg"
+    ],
+    "classification": [
+      "ONLY CHRISTMAS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F04",
+    "fact": "Phone number is 512-339-9313.",
+    "quote": "512-339-9313",
+    "source_url": "https://thechristmaslightguys.com/contact-christmas-light-austin.php",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": false
+  },
+  {
+    "id": "F05",
+    "fact": "Mailing address is PO Box 90305, Austin, TX 78709.",
+    "quote": "PO Box 90305 Austin, Texas 78709",
+    "source_url": "https://thechristmaslightguys.com/contact-christmas-light-austin.php",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": false
+  },
+  {
+    "id": "F06",
+    "fact": "Street address 2009 Pyramid Drive, Austin, TX 78734 (TLG footer and LocalBusiness JSON-LD).",
+    "quote": "512-339-9313 | 2009 Pyramid Drive, Austin, TX 78734",
+    "source_url": "https://thelightguysaustintx.com/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "CONTRADICTORY",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F07",
+    "fact": "Street address 9518 Hwy 290 W, Suite D, Austin, TX 78736 (Rank Math Organization JSON-LD only; not visible on any page).",
+    "quote": "\"streetAddress\": \"9518 Hwy 290 W, Suite D\"",
+    "source_url": "https://thelightguysaustintx.com/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "CONTRADICTORY",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F08",
+    "fact": "CLG email is guys@thechristmaslightguys.com.",
+    "quote": "guys@thechristmaslightguys.com",
+    "source_url": "https://thechristmaslightguys.com/contact-christmas-light-austin.php",
+    "sites": [
+      "clg"
+    ],
+    "classification": [
+      "ONLY CHRISTMAS SITE",
+      "CONTRADICTORY",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F09",
+    "fact": "TLG email is thelightguysaustin@gmail.com.",
+    "quote": "thelightguysaustin@gmail.com",
+    "source_url": "https://thelightguysaustintx.com/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "CONTRADICTORY",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F10",
+    "fact": "Business is based in Austin, Texas.",
+    "quote": "The Christmas Light Guys are based in Austin, TX.",
+    "source_url": "https://thechristmaslightguys.com/request-a-quote.php",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": false
+  },
+  {
+    "id": "F11",
+    "fact": "Serves residential and commercial customers.",
+    "quote": "Residential and Commercial Outdoor Christmas light fixture installation & decoration.",
+    "source_url": "https://thechristmaslightguys.com/",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": false
+  },
+  {
+    "id": "F12",
+    "fact": "Offers professional Christmas/holiday light installation and decorating.",
+    "quote": "Our professional Christmas light installation and decorating service",
+    "source_url": "https://thechristmaslightguys.com/",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": false
+  },
+  {
+    "id": "F13",
+    "fact": "Christmas items: roofline (fascia) lighting, pre-lit wreaths, pre-lit garlands with wire wrap, door trims, window trims, tree trunk wraps and canopy lighting, hedge lighting, walkway lighting.",
+    "quote": "Front and Facia (roofline) Lighting ... Walkway Lighting",
+    "source_url": "https://thechristmaslightguys.com/",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": false
+  },
+  {
+    "id": "F14",
+    "fact": "Each display gets a custom design.",
+    "quote": "We do a custom design for you",
+    "source_url": "https://thechristmaslightguys.com/",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": false
+  },
+  {
+    "id": "F15",
+    "fact": "Lights are taken down at the end of the season (no date stated).",
+    "quote": "take them down at the end of the season",
+    "source_url": "https://thechristmaslightguys.com/",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": false
+  },
+  {
+    "id": "F16",
+    "fact": "Off-season storage of customer decorations is offered.",
+    "quote": "store them for free",
+    "source_url": "https://thechristmaslightguys.com/",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "NEEDS AMY CONFIRMATION",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": true
+  },
+  {
+    "id": "F17",
+    "fact": "Storage is free.",
+    "quote": "store them for free",
+    "source_url": "https://thechristmaslightguys.com/",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F18",
+    "fact": "Estimates/consultations are free.",
+    "quote": "Call or email for a free estimate today.",
+    "source_url": "https://thechristmaslightguys.com/",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F19",
+    "fact": "Estimate process: call, schedule a free estimate, receive a preliminary lighting plan.",
+    "quote": "we will provide a preliminary lighting plan for your review",
+    "source_url": "https://thechristmaslightguys.com/austin-christmas-light-services.php",
+    "sites": [
+      "clg"
+    ],
+    "classification": [
+      "ONLY CHRISTMAS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F20",
+    "fact": "Takedown starts January 2; most displays down by January 15.",
+    "quote": "On January 2nd we will start removing and storing lights",
+    "source_url": "https://thechristmaslightguys.com/austin-christmas-light-services.php",
+    "sites": [
+      "clg"
+    ],
+    "classification": [
+      "ONLY CHRISTMAS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F21",
+    "fact": "Free service calls; storm-downed lights rehung at no charge.",
+    "quote": "We offer free service calls",
+    "source_url": "https://thechristmaslightguys.com/austin-christmas-light-services.php",
+    "sites": [
+      "clg"
+    ],
+    "classification": [
+      "ONLY CHRISTMAS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F22",
+    "fact": "If a customer moves within 3 years to a similar-size house, lights are refit to the new house.",
+    "quote": "If you move within 3 years to a house similar in size we can fit them to your new house",
+    "source_url": "https://thechristmaslightguys.com/austin-christmas-light-services.php",
+    "sites": [
+      "clg"
+    ],
+    "classification": [
+      "ONLY CHRISTMAS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F23",
+    "fact": "Equipment: heavy-gauge wire, C-9 bulbs, LEDs for trees/windows, connections taped and sealed.",
+    "quote": "C-9 bulbs for bright safe light and low-energy LEDs for tree and window decoration",
+    "source_url": "https://thechristmaslightguys.com/austin-christmas-light-services.php",
+    "sites": [
+      "clg"
+    ],
+    "classification": [
+      "ONLY CHRISTMAS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F24",
+    "fact": "Carries $1,000,000 liability insurance (linked COI PDF Last-Modified 2008-10-08).",
+    "quote": "View our $1,000,000 Liability Certificate of Insurance",
+    "source_url": "https://thechristmaslightguys.com/about-the-christmas-light-guys.php",
+    "sites": [
+      "clg"
+    ],
+    "classification": [
+      "ONLY CHRISTMAS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F25",
+    "fact": "Company is licensed and bonded / fully bonded and insured.",
+    "quote": "Licensed and Bonded",
+    "source_url": "https://thechristmaslightguys.com/",
+    "sites": [
+      "clg"
+    ],
+    "classification": [
+      "ONLY CHRISTMAS SITE",
+      "CONTRADICTORY",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F26",
+    "fact": "Company is fully licensed and insured.",
+    "quote": "We are a fully licensed and insured locally owned company",
+    "source_url": "https://thelightguysaustintx.com/our-company/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "CONTRADICTORY",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F27",
+    "fact": "Years in business: 9.",
+    "quote": "We have offered this service for 9 years in the Austin area",
+    "source_url": "https://thechristmaslightguys.com/about-the-christmas-light-guys.php",
+    "sites": [
+      "clg"
+    ],
+    "classification": [
+      "ONLY CHRISTMAS SITE",
+      "CONTRADICTORY",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F28",
+    "fact": "Years in business (Christmas): 20.",
+    "quote": "We have offered this service for 20 years in the Austin area",
+    "source_url": "https://thelightguysaustintx.com/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "CONTRADICTORY",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F29",
+    "fact": "Years of experience (landscape): over nine.",
+    "quote": "With over nine years of experience in residential and commercial landscape design maintenance",
+    "source_url": "https://thelightguysaustintx.com/our-company/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "CONTRADICTORY",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F30",
+    "fact": "Years of experience (events): over 20.",
+    "quote": "over 20 years of experience lighting events like yours",
+    "source_url": "https://thelightguysaustintx.com/weddings/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "CONTRADICTORY",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F31",
+    "fact": "CLG service area: Austin, Round Rock, Pflugerville, Georgetown, Leander, Travis County, Williamson County, Hays County.",
+    "quote": "Serving Austin, Round Rock, Pflugerville, Georgetown, Leander, Travis County, Williamson County, Hays County",
+    "source_url": "https://thechristmaslightguys.com/",
+    "sites": [
+      "clg"
+    ],
+    "classification": [
+      "ONLY CHRISTMAS SITE",
+      "CONTRADICTORY",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F32",
+    "fact": "TLG service area: Austin, Round Rock, Pflugerville, Georgetown, Leander, Westlake Hills, Lakeway, Bee Cave, Rollingwood, Spicewood, Cedar Park, Buda, Kyle, Bastrop, Jonestown, Lago Vista, Volente, Dripping Springs.",
+    "quote": "Serving Austin, Round Rock, Pflugerville, Georgetown, Leander, Westlake Hills, Lakeway, Bee Cave, ... and Dripping Springs",
+    "source_url": "https://thelightguysaustintx.com/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "CONTRADICTORY",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F33",
+    "fact": "Cities listed on both sites: Austin, Round Rock, Pflugerville, Georgetown, Leander.",
+    "quote": "Serving Austin, Round Rock, Pflugerville, Georgetown, Leander",
+    "source_url": "https://thechristmaslightguys.com/",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F34",
+    "fact": "Bastrop is served (CLG page titles only; TLG city list).",
+    "quote": "The Christmas Light Guys - Austin, Round Rock, Pflugerville, Georgetown, Bastrop, Leander Texas",
+    "source_url": "https://thechristmaslightguys.com/request-a-quote.php",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONTRADICTORY",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F35",
+    "fact": "Serves the entire Austin, Texas area.",
+    "quote": "We service the entire Austin, Texas area.",
+    "source_url": "https://thechristmaslightguys.com/",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F36",
+    "fact": "Offers permanent LED lighting installation.",
+    "quote": "Permanent LED Lighting for Austin Homes & Businesses",
+    "source_url": "https://thelightguysaustintx.com/permanent-lighting-page/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F37",
+    "fact": "Authorized JellyFish Lighting dealer (conflicts with the 'Permanent Inception LED' architectural page).",
+    "quote": "The Light Guys – Authorized JellyFish Lighting Dealer",
+    "source_url": "https://thelightguysaustintx.com/permanent-lighting-page/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "CONTRADICTORY",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F38",
+    "fact": "Permanent lighting is app-controlled with many colors.",
+    "quote": "Smart App Control – Choose from millions of colors",
+    "source_url": "https://thelightguysaustintx.com/permanent-lighting-page/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F39",
+    "fact": "Permanent lighting price depends on linear footage, design complexity and install needs.",
+    "quote": "Pricing is based on linear footage, design complexity, and install needs",
+    "source_url": "https://thelightguysaustintx.com/permanent-lighting-page/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F40",
+    "fact": "Permanent/architectural lighting performance and savings claims (pays for itself in 2 years, 87% savings, 50,000 hours, 10+ years).",
+    "quote": "PAYS FOR ITSELF IN 2 YEARS!",
+    "source_url": "https://thelightguysaustintx.com/architectural-lighting/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F41",
+    "fact": "Permanent lighting is a one-time payment that lasts forever.",
+    "quote": "You pay once—and enjoy it forever.",
+    "source_url": "https://thelightguysaustintx.com/why-permanent-led-lighting-is-the-smartest-upgrade-for-your-home/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F42",
+    "fact": "Landscape lighting is offered (CLG attributes it to The Light Guys).",
+    "quote": "The Light Guys provide top of line event, bistro, and landscape lighting.",
+    "source_url": "https://thechristmaslightguys.com/about-the-christmas-light-guys.php",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "NEEDS AMY CONFIRMATION",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": true
+  },
+  {
+    "id": "F43",
+    "fact": "Event and wedding lighting (bistro, PAR, LED) is offered.",
+    "quote": "we also offer Par lighting, LED lighting and Bistro lighting",
+    "source_url": "https://thelightguysaustintx.com/event-lighting/",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "NEEDS AMY CONFIRMATION",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": true
+  },
+  {
+    "id": "F44",
+    "fact": "Lights are available for rent and sale.",
+    "quote": "We also offer lights for rent and sale.",
+    "source_url": "https://thelightguysaustintx.com/event-lighting/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F45",
+    "fact": "Event packages include delivery, installation and removal.",
+    "quote": "our packages also include delivery, installation and removal of lights",
+    "source_url": "https://thelightguysaustintx.com/event-lighting/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F46",
+    "fact": "Year-round residential and commercial tree wrapping (attributed to The Light Guys).",
+    "quote": "They also offer residential and commercial tree wrapping year round.",
+    "source_url": "https://thechristmaslightguys.com/about-the-christmas-light-guys.php",
+    "sites": [
+      "clg"
+    ],
+    "classification": [
+      "ONLY CHRISTMAS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F47",
+    "fact": "Pathway, architectural and bistro pool/landscape lights are offered.",
+    "quote": "BISTRO POOL AND LANDSCAPE LIGHTING",
+    "source_url": "https://thelightguysaustintx.com/landscape-lighting/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": true
+  },
+  {
+    "id": "F48",
+    "fact": "Business hours Monday-Friday 08:00-17:00 (JSON-LD only).",
+    "quote": "\"opens\": \"08:00\", \"closes\": \"17:00\"",
+    "source_url": "https://thelightguysaustintx.com/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F49",
+    "fact": "Price range '$$' (JSON-LD only).",
+    "quote": "\"priceRange\": \"$$\"",
+    "source_url": "https://thelightguysaustintx.com/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F50",
+    "fact": "Staff member named Josh/Joshua appears in testimonials.",
+    "quote": "Joshua suggested that I use colored lights",
+    "source_url": "https://thechristmaslightguys.com/about-the-christmas-light-guys.php",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": false
+  },
+  {
+    "id": "F51",
+    "fact": "Customer testimonials (Suzette F., Laura W.; TLG adds others).",
+    "quote": "- Laura W.",
+    "source_url": "https://thechristmaslightguys.com/about-the-christmas-light-guys.php",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": false
+  },
+  {
+    "id": "F52",
+    "fact": "Testimonial claims the company is more affordable than competitors.",
+    "quote": "they are more affordable than anyone else out there",
+    "source_url": "https://thechristmaslightguys.com/about-the-christmas-light-guys.php",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": false
+  },
+  {
+    "id": "F53",
+    "fact": "Quote intake asks: name, address, city/state/zip, email, two phones, best time to contact, square footage, description, outdoor plugs (yes/no), other.",
+    "quote": "Do you have outdoor plugs?*",
+    "source_url": "https://thechristmaslightguys.com/request-a-quote.php",
+    "sites": [
+      "clg"
+    ],
+    "classification": [
+      "ONLY CHRISTMAS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": true
+  },
+  {
+    "id": "F54",
+    "fact": "Energy-efficient lighting positioning.",
+    "quote": "Convenient • Energy Efficient • Better Looking than your Neighbors",
+    "source_url": "https://thechristmaslightguys.com/",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "NEEDS AMY CONFIRMATION",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": true
+  },
+  {
+    "id": "F55",
+    "fact": "Slogan: We Do Lights Right.",
+    "quote": "WE DO LIGHTS RIGHT!",
+    "source_url": "https://thelightguysaustintx.com/christmas-lighting/",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": false
+  },
+  {
+    "id": "F56",
+    "fact": "Permanent lights can be set for other holidays (Halloween, 4th of July).",
+    "quote": "Light up Christmas, Halloween, or the 4th of July with ease",
+    "source_url": "https://thelightguysaustintx.com/permanent-lighting-page/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": true
+  },
+  {
+    "id": "F57",
+    "fact": "CLG links its sister company to thelightguysaustin.com, which is unregistered (NXDOMAIN, RDAP 404).",
+    "quote": "http://www.thelightguysaustin.com/",
+    "source_url": "https://thechristmaslightguys.com/about-the-christmas-light-guys.php",
+    "sites": [
+      "clg"
+    ],
+    "classification": [
+      "ONLY CHRISTMAS SITE",
+      "CONTRADICTORY",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": false
+  },
+  {
+    "id": "F58",
+    "fact": "The Light Guys website is thelightguysaustintx.com.",
+    "quote": "https://thelightguysaustintx.com/",
+    "source_url": "https://thelightguysaustintx.com/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": false
+  },
+  {
+    "id": "F59",
+    "fact": "Social profiles: facebook.com/thelightguysaustin and twitter.com/thelightguysatx.",
+    "quote": "http://www.facebook.com/thelightguysaustin",
+    "source_url": "https://thelightguysaustintx.com/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F60",
+    "fact": "Gallery photos show the company's own installs (filenames suggest Utah/stock images).",
+    "quote": "2021-May-Utah-South-Jordan-DSC04547.jpg",
+    "source_url": "https://thelightguysaustintx.com/permanent-lighting-page/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "NOT SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": false,
+    "needs_amy": true
+  },
+  {
+    "id": "F61",
+    "fact": "Permanent lighting is offered for commercial storefronts.",
+    "quote": "Draw attention to your storefront or business",
+    "source_url": "https://thelightguysaustintx.com/permanent-lighting-page/",
+    "sites": [
+      "tlg"
+    ],
+    "classification": [
+      "ONLY LIGHT GUYS SITE",
+      "NEEDS AMY CONFIRMATION",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": true
+  },
+  {
+    "id": "F62",
+    "fact": "Customers can request a quote online.",
+    "quote": "Request an Estimate: The Christmas Light Guys",
+    "source_url": "https://thechristmaslightguys.com/request-a-quote.php",
+    "sites": [
+      "clg",
+      "tlg"
+    ],
+    "classification": [
+      "CONFIRMED ON BOTH SITES",
+      "SAFE FOR AI TO STATE"
+    ],
+    "ai_safe": true,
+    "needs_amy": false
+  }
+]

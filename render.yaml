@@ -1,0 +1,53 @@
+# Render Blueprint: one always-on web service runs the whole app (screens,
+# API, call webhooks), in Ohio next to Supabase (us-east-2).
+# docs/render-setup.md walks through it; `npm run deploy:render` sets the
+# vendor keys and points ElevenLabs and Twilio at the service.
+services:
+  - type: web
+    name: lightline
+    runtime: node
+    region: ohio
+    plan: starter
+    buildCommand: npm ci && npm run build
+    # Migrations, then the office (numbers, knowledge, Amy's decisions, agent id).
+    # If it fails, the deploy stops and the running version keeps answering.
+    preDeployCommand: npm run db:deploy
+    startCommand: npx next start --hostname 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    # Deploy a push only after CI's tests pass.
+    autoDeployTrigger: checksPass
+    envVars:
+      # Supabase → Connect → Session pooler (IPv4). Asked for once, when the Blueprint is made.
+      - key: DATABASE_URL
+        sync: false
+      - key: AGENT_PROVIDER
+        value: elevenlabs
+      # The server sweeps due jobs and alerts itself (instrumentation.ts).
+      - key: JOB_SWEEP_SECONDS
+        value: "60"
+      # "live" once Resend or A2P texting is approved; until then alerts show in the inbox only.
+      - key: ALERT_MODE
+        value: simulate
+      - key: CRON_SECRET
+        generateValue: true
+      - key: FORM_SECRET
+        generateValue: true
+      # The inbox access code.
+      - key: OPERATOR_TOKEN
+        generateValue: true
+      # Seeded on the first deploy only; afterwards Amy changes them in Settings.
+      - key: OWNER_NAME
+        value: Amy
+      - key: CLG_MAIN_NUMBER
+        value: "+17373398333"
+      - key: AI_MODE
+        value: always
+      # Mon–Sat 9 AM–6 PM Central (Amy, 2026-10-22).
+      - key: RING_START
+        value: "09:00"
+      - key: RING_END
+        value: "18:00"
+      - key: RING_DAYS
+        value: "1,2,3,4,5,6"
+      - key: AMY_DECISIONS
+        value: "on"

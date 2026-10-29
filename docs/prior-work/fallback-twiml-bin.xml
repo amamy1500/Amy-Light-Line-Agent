@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Twilio-hosted fallback (TwiML Bin). Set it as each tracking number's
+  "Primary handler fails" URL. It runs only when our server cannot answer the
+  inbound webhook, so it must not depend on our server for anything the
+  caller hears: disclosure + one recorded message, no ring.
+
+  Replace YOUR-DOMAIN with the production origin. If the server is still
+  down when these callbacks fire, Twilio keeps the recording; the daily
+  reconciliation job (next slice) imports such calls from the Calls API.
+-->
+<Response>
+  <Say>Thanks for calling The Christmas Light Guys. We can't get to the phone right now and will call you back shortly. This call is recorded so we have your details. After the tone, please say your name, your address, what you'd like lit, and the best time to reach you.</Say>
+  <Record maxLength="120" timeout="5" playBeep="true" transcribe="true"
+          recordingStatusCallback="https://YOUR-DOMAIN/api/voice/recording"
+          transcribeCallback="https://YOUR-DOMAIN/api/voice/transcript" />
+  <Say>Thank you. We will call you back.</Say>
+</Response>

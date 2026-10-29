@@ -1,0 +1,128 @@
+{
+  "base": "http://localhost:3100",
+  "limit": 10,
+  "results": [
+    {
+      "burst": 1,
+      "seconds": 1.02,
+      "peakActiveAgentSessions": 1,
+      "limit": 10,
+      "calls": 1,
+      "with_lead": 1,
+      "agent": 1,
+      "captured": 0,
+      "pass": true
+    },
+    {
+      "burst": 5,
+      "seconds": 0.48,
+      "peakActiveAgentSessions": 5,
+      "limit": 10,
+      "calls": 5,
+      "with_lead": 5,
+      "agent": 5,
+      "captured": 0,
+      "pass": true
+    },
+    {
+      "burst": 10,
+      "seconds": 0.57,
+      "peakActiveAgentSessions": 10,
+      "limit": 10,
+      "calls": 10,
+      "with_lead": 10,
+      "agent": 10,
+      "captured": 0,
+      "pass": true
+    },
+    {
+      "burst": 20,
+      "seconds": 0.72,
+      "peakActiveAgentSessions": 10,
+      "limit": 10,
+      "calls": 20,
+      "with_lead": 20,
+      "agent": 10,
+      "captured": 10,
+      "pass": true
+    },
+    {
+      "burst": 50,
+      "seconds": 1.29,
+      "peakActiveAgentSessions": 10,
+      "limit": 10,
+      "calls": 50,
+      "with_lead": 50,
+      "agent": 10,
+      "captured": 40,
+      "pass": true
+    },
+    {
+      "burst": 100,
+      "seconds": 1.83,
+      "peakActiveAgentSessions": 10,
+      "limit": 10,
+      "calls": 100,
+      "with_lead": 100,
+      "agent": 10,
+      "captured": 90,
+      "pass": true
+    }
+  ],
+  "latencyMs": {
+    "/api/voice/inbound": {
+      "n": 186,
+      "p50": 381,
+      "p95": 641,
+      "max": 659
+    },
+    "/api/voice/dial-result": {
+      "n": 186,
+      "p50": 280,
+      "p95": 698,
+      "max": 745
+    },
+    "tool:save_lead_details": {
+      "n": 46,
+      "p50": 129,
+      "p95": 545,
+      "max": 560
+    },
+    "tool:request_callback": {
+      "n": 46,
+      "p50": 53,
+      "p95": 76,
+      "max": 80
+    },
+    "tool:finish_call": {
+      "n": 46,
+      "p50": 50,
+      "p95": 60,
+      "max": 65
+    },
+    "/api/voice/agent-ended": {
+      "n": 46,
+      "p50": 44,
+      "p95": 71,
+      "max": 71
+    },
+    "webhook:post-call": {
+      "n": 46,
+      "p50": 41,
+      "p95": 54,
+      "max": 74
+    },
+    "/api/voice/status": {
+      "n": 186,
+      "p50": 93,
+      "p95": 228,
+      "max": 234
+    },
+    "/api/voice/recording": {
+      "n": 140,
+      "p50": 221,
+      "p95": 372,
+      "max": 382
+    }
+  }
+}

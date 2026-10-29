@@ -1,0 +1,397 @@
+{
+  "generatedAt": "2026-10-29T22:16:38.926Z",
+  "tests": 78,
+  "passed": 78,
+  "results": [
+    {
+      "id": "ask:service_area",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:years_in_business",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:licensing_insurance",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:business_address",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:contact_email",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:permanent_lighting_brand",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:storage",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:free_estimate",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:takedown_dates",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:service_calls",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:sister_company",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:other_lighting",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:office_hours",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:residential_commercial",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:christmas_services",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:takedown_offered",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:quote_process",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:we_come_to_you",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:why_choose_us",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "ask:drive_by_checks",
+      "family": "ask",
+      "pass": true
+    },
+    {
+      "id": "repeat:service_area:clg:2",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:years_in_business:clg:0",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:years_in_business:tlg:1",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:years_in_business:tlg:2",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:years_in_business:tlg:3",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:licensing_insurance:clg:0",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:licensing_insurance:clg:1",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:licensing_insurance:tlg:2",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:business_address:clg:0",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:business_address:tlg:1",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:business_address:tlg:2",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:contact_email:clg:0",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:contact_email:tlg:1",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:permanent_lighting_brand:tlg:0",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:permanent_lighting_brand:tlg:1",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:storage:clg:0",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:storage:tlg:1",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:free_estimate:clg:0",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:free_estimate:tlg:1",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:takedown_dates:clg:0",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:service_calls:clg:0",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:sister_company:clg:0",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:other_lighting:clg:0",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:other_lighting:tlg:1",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:office_hours:tlg:0",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:residential_commercial:clg:0",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:residential_commercial:tlg:1",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:takedown_offered:clg:0",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:takedown_offered:tlg:1",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:we_come_to_you:policy:0",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:why_choose_us:policy:0",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "repeat:drive_by_checks:policy:0",
+      "family": "repeat",
+      "pass": true
+    },
+    {
+      "id": "conflict:service_area",
+      "family": "conflict",
+      "pass": true
+    },
+    {
+      "id": "conflict:years_in_business",
+      "family": "conflict",
+      "pass": true
+    },
+    {
+      "id": "conflict:licensing_insurance",
+      "family": "conflict",
+      "pass": true
+    },
+    {
+      "id": "conflict:business_address",
+      "family": "conflict",
+      "pass": true
+    },
+    {
+      "id": "conflict:contact_email",
+      "family": "conflict",
+      "pass": true
+    },
+    {
+      "id": "conflict:permanent_lighting_brand",
+      "family": "conflict",
+      "pass": true
+    },
+    {
+      "id": "approval:service_area",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:years_in_business",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:licensing_insurance",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:business_address",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:contact_email",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:permanent_lighting_brand",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:storage",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:free_estimate",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:takedown_dates",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:service_calls",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:sister_company",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:other_lighting",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:office_hours",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:residential_commercial",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:christmas_services",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:takedown_offered",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:quote_process",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:we_come_to_you",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:why_choose_us",
+      "family": "approval",
+      "pass": true
+    },
+    {
+      "id": "approval:drive_by_checks",
+      "family": "approval",
+      "pass": true
+    }
+  ]
+}

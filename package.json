@@ -1,0 +1,43 @@
+{
+  "name": "lightline",
+  "private": true,
+  "type": "module",
+  "description": "Zero-lost-lead AI receptionist and lead recovery for The Christmas Light Guys (tenant #1).",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start --port 3000",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p .",
+    "db:bundle": "node scripts/bundle-migrations.mjs",
+    "db:deploy": "tsx scripts/db-deploy.ts",
+    "deploy:render": "tsx scripts/deploy/render.ts",
+    "simulate": "tsx scripts/simulate-calls.ts",
+    "live": "tsx scripts/live/up.ts",
+    "live:setup": "tsx scripts/live/setup.ts"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "0.5.10",
+    "@elevenlabs/elevenlabs-js": "2.74.0",
+    "next": "16.4.2",
+    "pg": "8.23.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "twilio": "6.2.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "@types/pg": "8.23.1",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "fast-check": "4.10.2",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "vitest": "5.0.5"
+  }
+}
