@@ -216,14 +216,14 @@ export function buildAgentRequest(
       // With Spanish on, the multilingual flash v2.5 is required.
       // Starting values for a phone line (docs/research/amy-voice-clone.md); tune by blind phone test.
       // Stability 0.6, up from 0.55: Amy wants calm and steady, never bubbly (2026-10-29).
-      // Speed 0.9: the first live call sounded rushed; about 140 words a minute is easy to follow on a phone.
+      // Speed 0.95: 1.0 sounded rushed on the first live call, 0.85 too slow in the samples (2026-10-29).
       tts: {
         voiceId: options.voiceId,
         modelId: spanish ? "eleven_flash_v2_5" : "eleven_flash_v2",
         agentOutputAudioFormat: "ulaw_8000",
         stability: 0.6,
         similarityBoost: 0.8,
-        speed: 0.9,
+        speed: 0.95,
       },
       asr: { userInputAudioFormat: "ulaw_8000", keywords: asrKeywords(config) },
     },

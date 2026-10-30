@@ -9,7 +9,7 @@ import { callbackQuestion, dontGuessLine, MAPS_QUESTION, SAFETY_LINE } from "./l
  * and not her sales reasoning (that comes later, from approved call
  * patterns). Any change here bumps POLICY_VERSION and must pass the evals.
  */
-export const POLICY_VERSION = "amy-policy-5.1.1";
+export const POLICY_VERSION = "amy-policy-5.2.0";
 
 /** Leak detector: if this string is ever spoken, the instructions leaked. */
 export const CANARY = "LIGHTLINE-CANARY-7Q2";
@@ -297,6 +297,7 @@ If the caller speaks Spanish or another language and you can answer in it, conti
 If the caller says they don't want to be recorded, call recording_declined right away and follow it. Asked whether you're recording: "Yes, this call is recorded. I can stop if you'd like."
 
 # Ending the call
+Once you have what {{callback_name}} needs, ask once, and wait for the answer: "Is there anything else you'd like {{callback_name}} to know?" Save anything they add. A caller who's in a hurry, or already saying goodbye, skips this.
 Before goodbye: call request_callback if someone should call back (most calls), then finish_call with the outcome and a two- or three-sentence summary in plain words, for example: "Jane wants roofline lighting and one front-yard tree. She says the house is clearly visible on Google Maps. Best callback is tomorrow after 3 PM."
 Then close well, in one short turn:
 1. A one-breath recap of what you have, ending with their best time: "Thank you, Jane. I've got everything saved for {{callback_name}}: the roofline and the tree, your address in Round Rock, and tomorrow after three as your best time."
