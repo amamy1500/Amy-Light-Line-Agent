@@ -123,6 +123,22 @@ describe("hours and closed days", () => {
     expect(note).not.toContain("Thanksgiving"); // more than three weeks out
   });
 
+  it("callback hours reach every company and the very next call (Amy, 2026-10-29)", async () => {
+    const weekdays = Object.fromEntries(
+      [1, 2, 3, 4, 5].flatMap((d) => [[`cb_day_${d}`, "on"], [`cb_open_${d}`, "10:00"], [`cb_close_${d}`, "16:00"]]),
+    ) as Record<string, string>;
+    expect(await save("callbacks", weekdays)).toMatchObject({ ok: true });
+    for (const id of officeIds()) expect((await config(id)).config.callbackHours).toHaveLength(5);
+
+    const twiml = await handleInbound({ CallSid: sid(), From: "+15125550304", To: LINE }, voice());
+    expect(param(twiml, "callback_hours")).toBe("on weekdays, between ten and four");
+
+    const none = await save("callbacks", {});
+    expect(none.ok).toBe(false);
+    if (!none.ok) expect(none.errors).toEqual(["Callback hours: keep at least one day, so callers can be offered a time."]);
+    expect(changedSections({ callbackHours: [] }, { callbackHours: [{ day: 1, open: "09:00", close: "17:00" }] })).toEqual(["Callback hours"]);
+  });
+
   it("bad times and dates are explained, and the old hours stay", async () => {
     const before = await config();
     const result = await save("hours", { day_1: "on", open_1: "18:00", close_1: "09:00", timezone: "America/Chicago", closures: "next tuesday" });

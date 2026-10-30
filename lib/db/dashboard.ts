@@ -57,6 +57,8 @@ export interface LeadCard {
   serviceWanted: string | null;
   timing: string | null;
   callbackWindow: string | null;
+  /** yes / no / unsure: "no" means a site visit to set up on the callback (Amy, 2026-10-29). */
+  mapsVisible: string | null;
   propertyType: string | null;
   customerType: string | null;
   statedSource: string | null;
@@ -84,6 +86,7 @@ const CARD_SELECT = `
          l.intent, l.state, l.source, c.name as "campaignName", c.channel,
          l.contact_name as "contactName", l.contact_phone as "contactPhone", l.address, l.zip,
          l.service_wanted as "serviceWanted", l.timing, l.callback_window as "callbackWindow",
+         (select f.value from public.lead_fact_current f where f.lead_id = l.id and f.field = 'maps_visible') as "mapsVisible",
          l.property_type as "propertyType", l.customer_type as "customerType", l.stated_source as "statedSource",
          l.summary, l.needs_review as "needsReview", l.compliance,
          t.id as "openTaskId", t.priority as "taskPriority", t.due_window as "taskWindow",

@@ -49,6 +49,12 @@ export interface OwnerDecision {
   value?: { cities: string[]; zips: string[] };
   /** Who decided and how, when it differs from the batch's (a later message from the owner). */
   by?: string;
+  /**
+   * Approved words this decision updates. It applies to an approved item only
+   * while the item still says exactly these words, so a change made since in
+   * Approvals is never overwritten.
+   */
+  replaces?: string;
 }
 
 export interface KnowledgeItem {

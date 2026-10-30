@@ -120,8 +120,10 @@ export async function tenantScanOptions(
 /**
  * Records decisions the owner gave outside the console (e.g. by email)
  * through the same audited path as /approvals, then refreshes what the agent
- * may say. Only pending items change: a decision Amy later makes or undoes
- * in the console is never overwritten. Returns how many items it decided.
+ * may say. Only pending items change, and approved words a later message
+ * updates (OwnerDecision.replaces) while they are still the item's words: a
+ * decision Amy makes or undoes in the console is never overwritten. Returns
+ * how many items it decided.
  */
 export async function applyOwnerDecisions(
   db: Queryable,
@@ -132,7 +134,8 @@ export async function applyOwnerDecisions(
   for (const decision of input.decisions) {
     const item = items.get(decision.key);
     if (!item) throw new Error(`no knowledge item "${decision.key}" for this business`);
-    if (item.status !== "pending") continue;
+    const updates = item.status === "approved" && decision.replaces !== undefined && item.approvedText === decision.replaces;
+    if (item.status !== "pending" && !updates) continue;
     const text = decision.value ? decision.value.cities.join(", ") : (decision.text ?? null);
     if (decision.status === "approved" && !text) throw new Error(`approval of "${decision.key}" needs words or a value`);
     await decideKnowledge(db, { itemId: item.id, status: decision.status, text, value: decision.value ?? null, by: decision.by ?? input.by });

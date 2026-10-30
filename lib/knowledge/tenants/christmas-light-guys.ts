@@ -233,16 +233,16 @@ export const CLG_KNOWLEDGE: KnowledgeItem[] = [
     claims: [
       {
         brand: "policy",
-        value: "Josh handles every quote himself",
-        quote: "Amy, 2026-10-29: Josh handles pricing; it depends on the property and what the customer wants.",
+        value: "Pricing is handled on the callback",
+        quote: "Amy, 2026-10-29: pricing depends on the property and what the customer wants; callers hear \"our team\", not a name.",
         sourceUrl: null,
         siteFactId: null,
-        spoken: "Josh handles the pricing because it depends on the property and what you'd like done.",
+        spoken: "Our team handles pricing, because it depends on the property and what you'd like done.",
         markers: [],
       },
     ],
     suggestedText:
-      "Josh handles the pricing because it depends on the property and what you'd like done. I can make sure he has the details before he calls you.",
+      "Our team handles pricing, because it depends on the property and what you'd like done. I'll make sure they have all the details before they call you.",
   }),
   // Amy's requirements of 2026-10-29: how the office works, not claims from either site.
   item({
@@ -264,7 +264,29 @@ export const CLG_KNOWLEDGE: KnowledgeItem[] = [
         markers: ["stop by (our|the) (office|shop|warehouse)", "come (by|in to) (our|the) (office|shop|warehouse)", "visit (our|the) (office|showroom|shop)"],
       },
     ],
-    suggestedText: "We come to you, so there's no office to visit. Josh can go over everything when he calls.",
+    suggestedText: "Our team can go over everything when they call.",
+  }),
+  // Amy, 2026-10-29 (evening): a home that's hard to see on Google Maps gets a visit, set up on the callback.
+  item({
+    key: "site_visit",
+    title: "Site visits",
+    kind: "policy",
+    risk: "low",
+    // "visit cost" lets a price question about the visit reach this answer, not the quote process.
+    topics: ["site visit", "the visit", "visit cost", "come look", "be home", "be there"],
+    callerQuestion: "Is the visit free? Do I need to be home?",
+    claims: [
+      {
+        brand: "policy",
+        value: "The visit is free; someone needs to be home",
+        quote: "Amy, 2026-10-29: a home not visible on Google Maps needs a site visit; it's free and the homeowner needs to be home.",
+        sourceUrl: null,
+        siteFactId: null,
+        spoken: "The visit is free, and we'll just need someone home for it.",
+        markers: ["visit (is|'s) free", "no charge for (the|a) visit"],
+      },
+    ],
+    suggestedText: "The visit is free, and we'll just need someone home for it.",
   }),
   item({
     key: "why_choose_us",

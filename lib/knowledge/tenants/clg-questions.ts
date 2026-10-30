@@ -5,7 +5,7 @@ import { QUESTION_BANK_VALUE, type KnowledgeItem, type Risk } from "../model";
  * once (docs/research/clg-customer-questions.md §5, 39 items). None of these
  * is a CLG fact: each answer is a template whose [brackets] only Amy can
  * fill or strike, and a [blank] can never be approved (lib/db/knowledge.ts
- * decideKnowledge). Until Amy writes the words, the assistant says Josh (or,
+ * decideKnowledge). Until Amy writes the words, the assistant says our team (or,
  * for office matters, Amy) will cover it, and the question lands in her "before you call" brief.
  */
 function ask(def: { key: string; title: string; risk: Risk; topics: string[]; callerQuestion: string; template: string; note?: string }): KnowledgeItem {
@@ -83,7 +83,7 @@ export const CLG_QUESTION_BANK: KnowledgeItem[] = [
     risk: "low",
     topics: ["warm white", "multicolor", "colors"],
     callerQuestion: "What colors can I get?",
-    template: "We offer [warm white / multicolor / ___]. Josh can help you pick on his call.",
+    template: "We offer [warm white / multicolor / ___]. Our team can help you pick on the callback.",
   }),
   ask({
     key: "light_types_and_bulbs",
@@ -107,7 +107,7 @@ export const CLG_QUESTION_BANK: KnowledgeItem[] = [
     risk: "high",
     topics: ["small job", "just one", "minimum"],
     callerQuestion: "Can you do just a wreath or one tree?",
-    template: "[Yes, we do small jobs / Our smallest job is ___]. Josh can go over options.",
+    template: "[Yes, we do small jobs / Our smallest job is ___]. Our team can go over options.",
   }),
   ask({
     key: "roof_and_height_limits",
@@ -115,7 +115,7 @@ export const CLG_QUESTION_BANK: KnowledgeItem[] = [
     risk: "high",
     topics: ["two story", "steep", "tile roof", "metal roof", "tall tree"],
     callerQuestion: "Can you do two-story, steep, tile or metal roofs, or tall trees?",
-    template: "[We light ___]. For [___], Josh will decide whether he needs to see the property.",
+    template: "[We light ___]. For [___], our team will decide whether we need to see the property.",
   }),
   ask({
     key: "damage_concerns",
@@ -155,7 +155,7 @@ export const CLG_QUESTION_BANK: KnowledgeItem[] = [
     risk: "low",
     topics: ["electric bill", "energy", "LED", "environment"],
     callerQuestion: "Will this raise my electric bill? Are they LED?",
-    template: "[Our lights are ___]. Josh can talk through power use on his call.",
+    template: "[Our lights are ___]. Our team can talk through power use on the callback.",
   }),
   ask({
     key: "booking_lead_time",
@@ -163,7 +163,7 @@ export const CLG_QUESTION_BANK: KnowledgeItem[] = [
     risk: "high",
     topics: ["book early", "how soon", "schedule"],
     callerQuestion: "How far ahead should I book?",
-    template: "[Our guidance: ___]. Josh confirms every install date himself.",
+    template: "[Our guidance: ___]. Our team confirms every install date.",
   }),
   ask({
     key: "late_season_booking",
@@ -171,7 +171,7 @@ export const CLG_QUESTION_BANK: KnowledgeItem[] = [
     risk: "high",
     topics: ["too late", "December", "last minute"],
     callerQuestion: "Is it too late to get lights this year?",
-    template: "[Stock line, e.g. 'It's not too late to ask.'] Josh will check the schedule and call you. What date were you hoping for?",
+    template: "[Stock line, e.g. 'It's not too late to ask.'] Our team will check the schedule and call you. What date were you hoping for?",
   }),
   ask({
     key: "install_window",
@@ -179,7 +179,7 @@ export const CLG_QUESTION_BANK: KnowledgeItem[] = [
     risk: "high",
     topics: ["start", "November", "before Thanksgiving"],
     callerQuestion: "When do you start installing?",
-    template: "We usually install from [___] to [___]. Josh will confirm your date.",
+    template: "We usually install from [___] to [___]. Our team will confirm your date.",
   }),
   ask({
     key: "install_duration",
@@ -187,7 +187,7 @@ export const CLG_QUESTION_BANK: KnowledgeItem[] = [
     risk: "low",
     topics: ["how long", "hours", "all day"],
     callerQuestion: "How long does installation take?",
-    template: "Most installs take [___]. Josh will confirm for your home.",
+    template: "Most installs take [___]. Our team will confirm for your home.",
   }),
   ask({
     key: "takedown_flexibility",
@@ -195,7 +195,7 @@ export const CLG_QUESTION_BANK: KnowledgeItem[] = [
     risk: "high",
     topics: ["early takedown", "leave up", "February"],
     callerQuestion: "Can you take them down earlier or later?",
-    template: "[Our policy: ___]. Tell me your preferred date and I'll note it for Josh.",
+    template: "[Our policy: ___]. Tell me your preferred date and I'll note it for our team.",
   }),
   ask({
     key: "weather_policy",
@@ -219,15 +219,15 @@ export const CLG_QUESTION_BANK: KnowledgeItem[] = [
     risk: "high",
     topics: ["add more", "change", "extra"],
     callerQuestion: "Can I add more after installation?",
-    template: "[Yes, ___ / ___]. Josh will go over any changes with you.",
+    template: "[Yes, ___ / ___]. Our team will go over any changes with you.",
   }),
   ask({
     key: "callback_expectation",
     title: "Callback expectation",
     risk: "high",
     topics: ["call back", "when", "how soon"],
-    callerQuestion: "When will Josh call me back?",
-    template: "Josh returns calls [___]. What time is best for you?",
+    callerQuestion: "When will someone call me back?",
+    template: "Our team returns calls [___]. What time is best for you?",
   }),
   ask({
     key: "deposit_and_payment_timing",
@@ -259,7 +259,7 @@ export const CLG_QUESTION_BANK: KnowledgeItem[] = [
     risk: "high",
     topics: ["last year", "returning", "same design", "renew"],
     callerQuestion: "You did my lights last year. Do I start over?",
-    template: "[How returning customers rebook: ___]. I'll note you're a returning customer for Josh.",
+    template: "[How returning customers rebook: ___]. I'll note you're a returning customer for our team.",
   }),
   ask({
     key: "commercial_proposal_process",
@@ -267,7 +267,7 @@ export const CLG_QUESTION_BANK: KnowledgeItem[] = [
     risk: "high",
     topics: ["proposal", "board", "property manager", "bid"],
     callerQuestion: "Can you send a proposal for our business, HOA or board?",
-    template: "For businesses and communities, Josh [___]. Who should he send it to?",
+    template: "For businesses and communities, our team [___]. Who should we send it to?",
   }),
   ask({
     key: "commercial_paperwork",
@@ -308,7 +308,7 @@ export const CLG_QUESTION_BANK: KnowledgeItem[] = [
     risk: "high",
     topics: ["guarantee", "warranty", "satisfaction"],
     callerQuestion: "Do you guarantee your work?",
-    template: "[Amy's exact words, or 'Josh will go over that with you.']",
+    template: "[Amy's exact words, or 'Our team will go over that with you.']",
   }),
   ask({
     key: "discounts_and_promotions",
@@ -316,7 +316,7 @@ export const CLG_QUESTION_BANK: KnowledgeItem[] = [
     risk: "high",
     topics: ["discount", "deal", "referral", "early bird"],
     callerQuestion: "Do you have any discounts?",
-    template: "[Current offers: ___, or 'Josh can talk about pricing on his call.']",
+    template: "[Current offers: ___, or 'Our team can talk about pricing on the callback.']",
   }),
   ask({
     key: "other_holidays_early_install",
@@ -324,7 +324,7 @@ export const CLG_QUESTION_BANK: KnowledgeItem[] = [
     risk: "high",
     topics: ["Diwali", "Halloween", "Hanukkah", "early"],
     callerQuestion: "Can you install early for Diwali, or do other holidays?",
-    template: "[What we offer for other holidays: ___]. Josh will confirm dates.",
+    template: "[What we offer for other holidays: ___]. Our team will confirm dates.",
   }),
   ask({
     key: "gift_purchase",

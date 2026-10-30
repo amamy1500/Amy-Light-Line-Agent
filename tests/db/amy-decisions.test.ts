@@ -68,12 +68,12 @@ describe("Amy's answers, live", () => {
 
   it("answers in her words and picks the right one", async () => {
     const call = await liveCall();
-    expect((await ask(call, "price", "How much would the roofline cost?")).answer).toMatch(/^Josh handles the pricing because it depends on the property/);
+    expect((await ask(call, "price", "How much would the roofline cost?")).answer).toMatch(/^Our team handles pricing, because it depends on the property/);
     expect((await ask(call, "estimate", "Is the estimate free?")).answer).toBe("Yes, estimates are free.");
     expect((await ask(call, "years", "How long have you been in business?")).answer).toBe("We've been in business for 20 years.");
     expect((await ask(call, "storage", "Do you store the lights for me?")).answer).toMatch(/^Storage is included in the service/);
     expect((await ask(call, "permanent", "Do you do permanent lights?")).answer).toMatch(/not installing permanent lighting right now/);
-    expect((await ask(call, "office", "Where's your office? Can I stop by?")).answer).toMatch(/^We come to you, so there's no office to visit/);
+    expect((await ask(call, "office", "Where's your office? Can I stop by?")).answer).toBe("Our team can go over everything when they call.");
     expect((await ask(call, "myself", "Why should I hire you instead of doing it myself?")).answer).toMatch(/instead of on a ladder\.$/);
   });
 
@@ -138,6 +138,38 @@ describe("Amy's answers, live", () => {
     expect(nine.violations.map((v) => v.ref)).toContain("years_in_business");
   });
 
+  it("answers the visit and hours questions in her words (texts, 2026-10-29 evening)", async () => {
+    const call = await liveCall();
+    const visit = "The visit is free, and we'll just need someone home for it.";
+    expect((await ask(call, "visit", "Is the visit free?")).answer).toBe(visit);
+    expect((await ask(call, "price", "Does the visit cost anything?")).answer).toBe(visit);
+    expect((await ask(call, "home", "Do I need to be home for it?")).answer).toBe(visit);
+    expect((await ask(call, "hours", "What are your hours?")).answer).toBe("We return calls Monday through Friday, nine to five.");
+  });
+
+  it("a home that's hard to see gets her visit line, and a weekend callback is steered to a weekday once", async () => {
+    const call = await liveCall();
+    const hidden = await runTool("save_lead_details", { call_sid: call, maps_visible: "no" }, gateway());
+    expect(hidden.body.instruction).toContain(
+      `Say: "Thanks for letting me know. Since it's hard to see on Google Maps, our team will call you to set up a time to come take a look. The visit is free."`,
+    );
+    const unsure = await runTool("save_lead_details", { call_sid: call, maps_visible: "unsure" }, gateway());
+    expect(unsure.body.instruction).toContain("No problem. Our team will check, and if it's hard to see, they'll call to set up a time to come take a look.");
+
+    // NIGHT is a Tuesday at 11 PM: the next times are tomorrow.
+    const saturday = await runTool("save_lead_details", { call_sid: call, callback_window: "Saturday morning" }, gateway());
+    expect(saturday.body).toMatchObject({ outside_callback_hours: true, saved: ["callback_window"] });
+    expect(saturday.body.instruction).toContain(
+      "I'm sorry, our team only makes calls on weekdays, between nine and five. Would tomorrow morning or afternoon work for you?",
+    );
+    // The caller can't do a weekday: keep what they said, never ask a third time.
+    const again = await runTool("save_lead_details", { call_sid: call, callback_window: "Saturdays only" }, gateway());
+    expect(again.body.outside_callback_hours).toBeUndefined();
+
+    const weekday = await runTool("save_lead_details", { call_sid: await liveCall(), callback_window: "Thursday after 2" }, gateway());
+    expect(weekday.body.outside_callback_hours).toBeUndefined();
+  });
+
   it("a decision Amy changes later in the console is never overwritten by re-applying the email", async () => {
     const item = (await listKnowledge(db, businessId)).find((i) => i.key === "free_estimate")!;
     await decideKnowledge(db, { itemId: item.id, status: "approved", text: "Estimates are always free.", value: null, by: "operator" });
@@ -145,5 +177,21 @@ describe("Amy's answers, live", () => {
     expect(applied).toBe(0);
     const after = (await listKnowledge(db, businessId)).find((i) => i.key === "free_estimate")!;
     expect(after.approvedText).toBe("Estimates are always free.");
+  });
+
+  it("her evening texts update the words she approved that morning, but not words changed since in Approvals", async () => {
+    // The live database as of the morning: the "Josh" words approved, one of them since edited in the console.
+    const items = await listKnowledge(db, businessId);
+    const quote = items.find((i) => i.key === "quote_process")!;
+    const office = items.find((i) => i.key === "we_come_to_you")!;
+    const morning = (key: string) => CLG_AMY_DECISIONS.find((d) => d.key === key)!.replaces!;
+    await decideKnowledge(db, { itemId: quote.id, status: "approved", text: morning("quote_process"), value: null, by: CLG_DECIDED_BY });
+    await decideKnowledge(db, { itemId: office.id, status: "approved", text: "We're happy to meet you at your home.", value: null, by: "operator" });
+
+    expect(await applyOwnerDecisions(db, { tenantId, businessId, decisions: CLG_AMY_DECISIONS, by: CLG_DECIDED_BY })).toBe(1);
+    const after = new Map((await listKnowledge(db, businessId)).map((i) => [i.key, i]));
+    expect(after.get("quote_process")!.approvedText).toMatch(/^Our team handles pricing/);
+    expect(after.get("we_come_to_you")!.approvedText).toBe("We're happy to meet you at your home.");
+    expect((await loadActiveConfig(db, businessId))!.config.facts.find((f) => f.id === "quote_process")!.text).toMatch(/^Our team/);
   });
 });

@@ -11,7 +11,7 @@ function lead(card: Partial<LeadCard>, facts: Array<Partial<FactRow>> = [], time
       id: "11111111-1111-4111-8111-111111111111", businessId: "b", businessName: "Christmas Light Guys", businessKind: "company",
       intent: "warm", state: "new", source: "agent_call", campaignName: null, channel: "tv", contactName: "Priya Raman",
       contactPhone: "+15125550147", address: "88 Hidden Hills Dr, Dripping Springs", zip: null, serviceWanted: "roofline and two trees",
-      timing: null, callbackWindow: "weekday mornings", propertyType: "residential", customerType: "new", statedSource: null,
+      timing: null, callbackWindow: "weekday mornings", mapsVisible: null, propertyType: "residential", customerType: "new", statedSource: null,
       summary: null, needsReview: false, compliance: { missing: ["caller_email", "outdoor_plugs"] }, openTaskId: null,
       taskPriority: null, taskWindow: null, lastCallState: null, transferred: false, createdAt: AT, ...card,
     },
@@ -80,13 +80,13 @@ describe("before-you-call brief", () => {
   });
 });
 
-describe("Josh's lead sheet (Amy, 2026-10-29)", () => {
+describe("The callback lead sheet (Amy, 2026-10-29)", () => {
   const facts = [
     { field: "maps_visible" as const, value: "yes" },
     { field: "home_size" as const, value: "about 2,500" },
   ];
 
-  it("lists her fields in her order, says Josh decides on a visit, and that nothing was quoted or promised", () => {
+  it("lists her fields in her order, says whether a visit is needed, and that nothing was quoted or promised", () => {
     const brief = callbackBrief(
       lead({ summary: "Priya wants the roofline and two trees. The house is easy to see on Google Maps." }, facts),
       "Amy",
@@ -102,13 +102,24 @@ describe("Josh's lead sheet (Amy, 2026-10-29)", () => {
       { label: "Home visible on Google Maps", value: "Yes" },
       { label: "Square footage", value: "about 2,500" },
       { label: "Preferred callback", value: "weekday mornings" },
-      { label: "Possible property visit", value: "Josh decides" },
+      { label: "Site visit", value: "Probably not: visible on Google Maps" },
       { label: "Pricing discussed", value: "No" },
       { label: "Promises made", value: "None" },
       { label: "Summary", value: "Priya wants the roofline and two trees. The house is easy to see on Google Maps." },
       { label: "Next action", value: "Josh callback" },
     ]);
     expect(brief.opener).toMatch(/^Hi Priya, it's Josh with The Christmas Light Guys\./);
+  });
+
+  it("a home that's hard to see on Google Maps is a site visit to set up on the callback (Amy, 2026-10-29)", () => {
+    const brief = callbackBrief(lead({}, [{ field: "maps_visible", value: "no" }]), "Amy", "The Christmas Light Guys", {
+      callback: "Amy",
+      propertyLines: true,
+    });
+    const line = (label: string) => brief.sheet.find((l) => l.label === label)?.value;
+    expect(line("Site visit")).toBe("Yes: set up a time on the callback (hard to see on Google Maps)");
+    expect(line("Next action")).toBe("Call to set up the site visit");
+    expect(brief.opener).toMatch(/^Hi Priya, it's Amy with The Christmas Light Guys/);
   });
 
   it("anything the scan caught shows as a promise to check; urgent reports go back to Amy", () => {

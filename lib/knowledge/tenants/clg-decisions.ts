@@ -1,14 +1,16 @@
 import type { OwnerDecision } from "../model";
 
 /**
- * Amy's own answers, by email on 2026-10-22 (entered by Pavan), and her
- * requirements of 2026-10-29 (relayed by Pavan), applied through the same
- * audited decision path as /approvals. Her words are kept as she wrote them
- * where the assistant speaks them. Items she didn't answer stay pending, and
- * the assistant keeps deferring to Josh or her on them.
+ * Amy's own answers, by email on 2026-10-22 (entered by Pavan), her
+ * requirements of 2026-10-29 and her texts that evening approving the exact
+ * words (relayed by Pavan), applied through the same audited decision path as
+ * /approvals. Her words are kept as she wrote them where the assistant speaks
+ * them. Items she didn't answer stay pending, and the assistant keeps
+ * deferring to the callback on them.
  */
 export const CLG_DECIDED_BY = "Amy (email 2026-10-22, entered by Pavan)";
 export const CLG_DECIDED_BY_1029 = "Amy (requirements 2026-10-29, relayed by Pavan)";
+export const CLG_DECIDED_BY_1029_EVENING = "Amy (texts 2026-10-29 evening, relayed by Pavan)";
 
 /** TLG site list; Amy: "The 18 areas. Some are not cities." */
 const SERVICE_AREAS = [
@@ -19,12 +21,13 @@ const SERVICE_AREAS = [
 
 export const CLG_AMY_DECISIONS: readonly OwnerDecision[] = [
   {
-    // The answer to "how much?". Replaces her 10-22 words, which offered a Google Maps
-    // review or a site visit: Josh decides that, the assistant never offers it.
+    // The answer to "how much?". Callers hear "our team", not a name: Amy calls back herself
+    // and doesn't want to be stuck wearing that hat (texts, 2026-10-29 evening).
     key: "quote_process",
     status: "approved",
-    text: "Josh handles the pricing because it depends on the property and what you'd like done. I can make sure he has the details before he calls you.",
-    by: CLG_DECIDED_BY_1029,
+    text: "Our team handles pricing, because it depends on the property and what you'd like done. I'll make sure they have all the details before they call you.",
+    by: CLG_DECIDED_BY_1029_EVENING,
+    replaces: "Josh handles the pricing because it depends on the property and what you'd like done. I can make sure he has the details before he calls you.",
   },
   { key: "years_in_business", status: "approved", text: "We've been in business for 20 years." }, // Q9
   { key: "service_area", status: "approved", value: { cities: SERVICE_AREAS, zips: [] } }, // Q10
@@ -53,7 +56,16 @@ export const CLG_AMY_DECISIONS: readonly OwnerDecision[] = [
   { key: "contact_email", status: "rejected", by: CLG_DECIDED_BY_1029 },
   // No customers at the operating location, and no address is ever given.
   { key: "business_address", status: "rejected", by: CLG_DECIDED_BY_1029 },
-  { key: "we_come_to_you", status: "approved", text: "We come to you, so there's no office to visit. Josh can go over everything when he calls.", by: CLG_DECIDED_BY_1029 },
+  {
+    // "No need to mention office visits. No one asks." She kept the second half (2026-10-29 evening).
+    key: "we_come_to_you",
+    status: "approved",
+    text: "Our team can go over everything when they call.",
+    by: CLG_DECIDED_BY_1029_EVENING,
+    replaces: "We come to you, so there's no office to visit. Josh can go over everything when he calls.",
+  },
+  { key: "site_visit", status: "approved", text: "The visit is free, and we'll just need someone home for it.", by: CLG_DECIDED_BY_1029_EVENING },
+  { key: "office_hours", status: "approved", text: "We return calls Monday through Friday, nine to five.", by: CLG_DECIDED_BY_1029_EVENING },
   {
     // Her themes, in facts she already approved (install, takedown, storage). "White-glove",
     // "gold standard", "professional-grade" and "magical" wait for her exact words.

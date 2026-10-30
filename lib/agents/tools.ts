@@ -16,7 +16,8 @@ import {
 import type { Queryable } from "@/lib/db/migrate";
 import { findLineByCallSid, ownerOnCall, type UrgentKind } from "@/lib/db/repo";
 import { formatUsPhone, normalizeUsPhone } from "@/lib/telephony/phone";
-import { callbackQuestion, dontGuessLine, MAPS_QUESTION, SAFETY_LINE } from "./lines";
+import { callbackChoice, callbackHoursNote, callbackQuestionFor, outsideCallbackHours } from "./callback-time";
+import { dontGuessLine, MAPS_QUESTION, mapsHiddenLine, mapsUnsureLine, outsideHoursLine, SAFETY_LINE } from "./lines";
 import { companyNotes } from "./policy";
 
 /**
@@ -141,7 +142,7 @@ const LeadDetails = z.strictObject({
   // Spelled back and confirmed by the caller before it is saved (see the parameter description).
   caller_email: z.string().trim().toLowerCase().email().max(120).optional(),
   home_size: text(60).optional(),
-  // Amy, 2026-10-29: tells Josh whether he may need to see the property. Stored as said: yes, no or unsure.
+  // Amy, 2026-10-29: a home that's hard to see needs a visit, set up on the callback. Stored as said: yes, no or unsure.
   maps_visible: z.enum(["yes", "no", "unsure"]).optional(),
 });
 
@@ -164,10 +165,46 @@ export function askFor(field: FactField, config: BusinessConfig): string {
     case "maps_visible":
       return `whether the home is easy to see on Google Maps ("${MAPS_QUESTION}")`;
     case "callback_window":
-      return `the best time to call back ("${callbackQuestion(callbackName(config))}")`;
+      return `the best time to call back ("${callbackQuestionFor(config)}")`;
     default:
       return field.replace(/_/g, " ");
   }
+}
+
+/** "The visit is free, and we'll…" → "The visit is free.": the first clause of an approved answer. */
+function firstClause(text: string): string {
+  return `${(/^[^,.;!?]+/.exec(text)?.[0] ?? text).trim()}.`;
+}
+
+/**
+ * What to say after the Google Maps answer (Amy, 2026-10-29). A hidden home
+ * gets a visit, set up on the callback; whether it's free is said only in
+ * Amy's approved words on visits, and only when she has approved some.
+ */
+function mapsReply(answer: "yes" | "no" | "unsure" | undefined, config: BusinessConfig): string | null {
+  const name = callbackName(config);
+  switch (answer) {
+    case "yes":
+      return `That helps. I'll include that for ${name}.`;
+    case "no": {
+      const visit = approvedFacts(config).find((f) => f.id === "site_visit");
+      return visit ? `${mapsHiddenLine(name)} ${firstClause(visit.text)}` : mapsHiddenLine(name);
+    }
+    case "unsure":
+      return mapsUnsureLine(name);
+    default:
+      return null;
+  }
+}
+
+/** True once this call has already been steered off a time outside the call hours: it happens once, never twice. */
+async function steeredBefore(deps: ToolDeps): Promise<boolean> {
+  const { rows } = await deps.db.query(
+    `select 1 from public.tool_call
+      where call_id = $1 and tool_name = 'save_lead_details' and output->>'outside_callback_hours' = 'true' limit 1`,
+    [deps.ctx.callId],
+  );
+  return rows.length > 0;
 }
 
 async function saveFacts(deps: ToolDeps, facts: Partial<Record<FactField, string>>): Promise<FactField[]> {
@@ -280,14 +317,30 @@ export const TOOLS = {
       }
       const saved = await saveFacts(deps, facts);
       const next = await stillNeeded(deps);
+      const name = callbackName(deps.config);
+      // Saved as said, so nothing is lost; the caller is offered the next times once.
+      if (args.callback_window && outsideCallbackHours(args.callback_window, deps.config, deps.now) && !(await steeredBefore(deps))) {
+        const line = outsideHoursLine(name, callbackHoursNote(deps.config), callbackChoice(deps.config, deps.now));
+        return {
+          outcome: "ok",
+          body: {
+            saved,
+            still_needed: next,
+            outside_callback_hours: true,
+            instruction: `Say kindly: "${line}" Save the time they pick instead. If none of those work for them, keep what they said and carry on.`,
+          },
+        };
+      }
+      const reply = mapsReply(args.maps_visible, deps.config);
+      const say = reply ? `Say: "${reply}" ` : "";
       return {
         outcome: "ok",
         body: {
           saved,
           still_needed: next,
           instruction: next.length
-            ? `Acknowledge briefly, then ask naturally for ${askFor(next[0]!, deps.config)}. One question at a time.`
-            : `You have what ${callbackName(deps.config)} needs. Confirm the best number if you haven't, ask once whether there's anything else they'd like ${callbackName(deps.config)} to know, then call request_callback and wrap up.`,
+            ? `${reply ? `${say}Then ask` : "Acknowledge briefly, then ask"} naturally for ${askFor(next[0]!, deps.config)}. One question at a time.`
+            : `${say}You have what ${name} needs. Confirm the best number if you haven't, ask once whether there's anything else they'd like ${name} to know, then call request_callback and wrap up.`,
         },
       };
     },
@@ -348,11 +401,14 @@ export const TOOLS = {
       );
       // The fact whose topics the question names most wins: "is the estimate
       // free?" gets the free-estimate answer, "how much?" the quote process.
+      // On a tie, the longer topic phrases win: "does the visit cost anything?"
+      // names "the visit" and "visit cost", which beats "price" and "cost".
       let fact: (typeof eligible)[number] | undefined;
-      let best = 0;
+      let best = [0, 0];
       for (const candidate of eligible) {
-        const hits = candidate.topics.filter((t) => mentionsTopic(asked, t)).length;
-        if (hits > best) [fact, best] = [candidate, hits];
+        const named = candidate.topics.filter((t) => mentionsTopic(asked, t));
+        const score = [named.length, named.join(" ").split(/\s+/).filter(Boolean).length];
+        if (score[0]! > best[0]! || (score[0] === best[0] && score[1]! > best[1]!)) [fact, best] = [candidate, score];
       }
       if (!fact && escalate) fact = eligible[0];
       // Amy sees every question, answered or not.
@@ -423,7 +479,7 @@ export const TOOLS = {
         body: {
           transferring: false,
           why,
-          instruction: `Say ${owner} can't come to the phone right now, that you've saved everything so they won't have to repeat it, and ask the best time for ${owner} to call back. Then call request_callback.`,
+          instruction: `Say ${owner} can't come to the phone right now, that you've saved everything so they won't have to repeat it, and ask: "${callbackQuestionFor(deps.config)}" Then call request_callback.`,
         },
       });
       if (!transferAllowed(deps.config, deps.now, deps.ctx.transferAttempts)) {
@@ -437,7 +493,7 @@ export const TOOLS = {
           body: {
             transferring: false,
             why: "owner_busy",
-            instruction: `Say ${owner} is on another call right now, that you've saved everything so they won't have to repeat it, and ask the best time for ${owner} to call back. Then call request_callback.`,
+            instruction: `Say ${owner} is on another call right now, that you've saved everything so they won't have to repeat it, and ask: "${callbackQuestionFor(deps.config)}" Then call request_callback.`,
           },
         };
       }

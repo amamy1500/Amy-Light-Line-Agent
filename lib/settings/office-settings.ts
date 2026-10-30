@@ -17,11 +17,11 @@ import { normalizeUsPhone } from "@/lib/telephony/phone";
  * recording notice, no prices / dates / warranties, and the voicemail floor.
  */
 
-export const SETTINGS_SECTIONS = ["answering", "owner", "hours", "spam", "alerts", "callers", "company"] as const;
+export const SETTINGS_SECTIONS = ["answering", "owner", "hours", "callbacks", "spam", "alerts", "callers", "company"] as const;
 export type SettingsSection = (typeof SETTINGS_SECTIONS)[number];
 
 /** Office-wide sections apply to every company Amy answers for; "company" to the one picked. */
-export const OFFICE_WIDE: ReadonlySet<SettingsSection> = new Set(["answering", "owner", "hours", "spam", "alerts", "callers"]);
+export const OFFICE_WIDE: ReadonlySet<SettingsSection> = new Set(["answering", "owner", "hours", "callbacks", "spam", "alerts", "callers"]);
 
 /** Shown on the settings page as "always on". */
 export const LOCKED_RULES = [
@@ -82,6 +82,26 @@ function boundedText(form: FormLike, name: string, label: string, min: number, m
   const value = text(form, name).replace(/\s+/g, " ");
   if (value.length < min || value.length > max) errors.push(`${label}: ${min}–${max} characters.`);
   return value;
+}
+
+/** One switch and two times per day (`${prefix}day_1`, `${prefix}open_1`, `${prefix}close_1`); days switched off are left out. */
+function weeklyHours(form: FormLike, prefix: string, errors: string[]): BusinessConfig["ringHours"] {
+  const hours: BusinessConfig["ringHours"] = [];
+  for (let day = 0; day < 7; day += 1) {
+    if (!checked(form, `${prefix}day_${day}`)) continue;
+    const open = text(form, `${prefix}open_${day}`);
+    const close = text(form, `${prefix}close_${day}`);
+    if (!CLOCK.test(open) || !CLOCK.test(close)) {
+      errors.push(`${DAY_NAMES[day]}: times look like 09:00.`);
+      continue;
+    }
+    if (minutes(open) >= closingMinutes(close)) {
+      errors.push(`${DAY_NAMES[day]}: closing time must be after opening time.`);
+      continue;
+    }
+    hours.push({ day, open, close });
+  }
+  return hours;
 }
 
 function minutes(clock: string): number {
@@ -165,25 +185,19 @@ const SECTION_PARSERS: Record<SettingsSection, (form: FormLike) => Parsed> = {
   /** When Amy's phone rings first, and whole days the office is closed. */
   hours(form) {
     const errors: string[] = [];
-    const ringHours: BusinessConfig["ringHours"] = [];
-    for (let day = 0; day < 7; day += 1) {
-      if (!checked(form, `day_${day}`)) continue;
-      const open = text(form, `open_${day}`);
-      const close = text(form, `close_${day}`);
-      if (!CLOCK.test(open) || !CLOCK.test(close)) {
-        errors.push(`${DAY_NAMES[day]}: times look like 09:00.`);
-        continue;
-      }
-      if (minutes(open) >= closingMinutes(close)) {
-        errors.push(`${DAY_NAMES[day]}: closing time must be after opening time.`);
-        continue;
-      }
-      ringHours.push({ day, open, close });
-    }
+    const ringHours = weeklyHours(form, "", errors);
     const timezone = text(form, "timezone");
     if (!(US_TIMEZONES as readonly string[]).includes(timezone)) errors.push("Time zone: pick one from the list.");
     const closures = parseClosures(String(form.get("closures") ?? ""), errors);
     return { errors, patch: (c) => ({ ...c, ringHours, timezone, closures }) };
+  },
+
+  /** When leads get called back: the assistant asks for a time inside these hours. */
+  callbacks(form) {
+    const errors: string[] = [];
+    const callbackHours = weeklyHours(form, "cb_", errors);
+    if (callbackHours.length === 0 && errors.length === 0) errors.push("Callback hours: keep at least one day, so callers can be offered a time.");
+    return { errors, patch: (c) => ({ ...c, callbackHours }) };
   },
 
   /** Who must press 1 first. Amy's own blocks are made on a lead's page. */
@@ -341,6 +355,7 @@ const SECTION_OF: Array<[label: string, paths: string[]]> = [
   ["Who answers", ["ai.mode", "transfer"]],
   ["Owner & ring phone", ["brand.ownerFirstName", "brand.assistantRole"]],
   ["Hours & closed days", ["ringHours", "timezone", "closures"]],
+  ["Callback hours", ["callbackHours"]],
   ["Spam screening", ["screening"]],
   ["Alerts", ["alerts", "notifications"]],
   ["Safety & languages", ["safety", "ai.spanish"]],

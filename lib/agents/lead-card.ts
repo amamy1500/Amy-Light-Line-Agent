@@ -14,12 +14,12 @@ export interface IntentResult {
   intent: Intent;
   /** Plain reasons Amy can read, e.g. "asked for a date". */
   reasons: string[];
-  /** Of the details Josh needs, which were captured. Shown as "4 of 5", never as a fake confidence score. */
+  /** Of the details the callback needs, which were captured. Shown as "4 of 5", never as a fake confidence score. */
   captured: FactField[];
   missing: FactField[];
 }
 
-/** What Josh needs before calling back without re-interviewing the caller (Amy, 2026-10-29). */
+/** What the callback needs so nobody re-interviews the caller (Amy, 2026-10-29). */
 export const ESSENTIAL_FIELDS: readonly FactField[] = [
   "caller_name",
   "service_requested",

@@ -5,7 +5,7 @@ import { FIELD_LABEL } from "@/lib/server/labels";
 import { formatUsPhone } from "@/lib/telephony/phone";
 
 /**
- * What Josh (or Amy) reads in the ten seconds before calling back: the lead
+ * What Amy (or whoever calls back) reads in the ten seconds before calling back: the lead
  * sheet, how to open, what the caller wants in their own words, the questions
  * they asked that only the business can answer, and what to be careful with
  * (nothing was quoted or promised). Built from what was stored, never
@@ -59,8 +59,15 @@ const PROMISES: Record<string, string> = {
   site_visit_offered: "a site visit",
 };
 
+/** What the Google Maps answer means for the callback (Amy, 2026-10-29). */
+const VISIT_LINE: Record<string, string> = {
+  no: "Yes: set up a time on the callback (hard to see on Google Maps)",
+  unsure: "Maybe: check Google Maps first",
+  yes: "Probably not: visible on Google Maps",
+};
+
 export interface BriefPeople {
-  /** Who calls sales leads back (e.g. Josh). Absent: the owner. */
+  /** The person who dials the callback (e.g. Amy, or Josh). Absent: the owner. */
   callback?: string;
   /** The business asks whether the home shows on Google Maps, so the sheet has the property lines. */
   propertyLines?: boolean;
@@ -126,7 +133,7 @@ export function callbackBrief(detail: LeadDetail, owner: string, company: string
         ]
       : []),
     { label: "Preferred callback", value: card.callbackWindow ?? "Not given" },
-    ...(people.propertyLines ? [{ label: "Possible property visit", value: `${callback} decides` }] : []),
+    ...(people.propertyLines ? [{ label: "Site visit", value: VISIT_LINE[current.get("maps_visible") ?? ""] ?? "Not asked" }] : []),
     {
       label: "Pricing discussed",
       value: summary?.priceStated ? "Yes: check the transcript" : summary?.priceAsked ? "They asked; no price given" : "No",
@@ -135,7 +142,13 @@ export function callbackBrief(detail: LeadDetail, owner: string, company: string
     ...(card.summary ? [{ label: "Summary", value: card.summary }] : []),
     {
       label: "Next action",
-      value: doNotContact ? "Don't call" : urgent.length ? `${owner} callback (urgent)` : `${callback} callback`,
+      value: doNotContact
+        ? "Don't call"
+        : urgent.length
+          ? `${owner} callback (urgent)`
+          : current.get("maps_visible") === "no"
+            ? "Call to set up the site visit"
+            : `${callback} callback`,
     },
   ];
 

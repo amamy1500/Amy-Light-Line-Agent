@@ -16,6 +16,9 @@ export const DYNAMIC_VARIABLE_KEYS = [
   "company_context",
   "owner_name",
   "callback_name",
+  "callback_hours",
+  "callback_question",
+  "callback_choice",
   "assistant_role",
   "today",
 ] as const;
@@ -51,8 +54,14 @@ export function buildDynamicVariables(input: {
   companyContext: string;
   /** Who answers the phones (Settings → Owner); a new hire needs no agent re-publish. */
   ownerName: string;
-  /** Who calls sales leads back and talks pricing (e.g. Josh); the owner when nobody else is set. */
+  /** Who calls sales leads back ("our team", or a name); the owner when nobody else is set. */
   callbackName: string;
+  /** When they make calls, e.g. "on weekdays, between nine and five". */
+  callbackHours: string;
+  /** The callback question, word for word. */
+  callbackQuestion: string;
+  /** The next two times they could call, e.g. "Monday morning or afternoon". */
+  callbackChoice: string;
   /** How the assistant introduces itself, e.g. "Amy's AI assistant". */
   assistantRole: string;
   /** Local date and time, e.g. "Thursday, November 26, 2026 at 2:15 PM (America/Chicago)". */
@@ -71,6 +80,9 @@ export function buildDynamicVariables(input: {
     company_context: input.companyContext,
     owner_name: input.ownerName,
     callback_name: input.callbackName,
+    callback_hours: input.callbackHours,
+    callback_question: input.callbackQuestion,
+    callback_choice: input.callbackChoice,
     assistant_role: input.assistantRole,
     today: input.today,
   };

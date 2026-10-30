@@ -4,7 +4,7 @@ import { displayName, LeadCardView } from "@/app/_components/lead-card";
 import { Shell } from "@/app/_components/shell";
 import { callbackBrief } from "@/lib/agents/callback-brief";
 import { Icon, Notice } from "@/app/_components/ui";
-import { callbackName, parseBusinessConfig } from "@/lib/business-rules/config";
+import { callbackCaller, parseBusinessConfig } from "@/lib/business-rules/config";
 import { callbackWindow } from "@/lib/business-rules/quiet-hours";
 import { businessById, leadDetail, officeBusinesses, primaryBusiness } from "@/lib/db/dashboard";
 import { findBlock } from "@/lib/db/screening";
@@ -57,7 +57,7 @@ export default async function LeadPage({
   const chrome = await consoleChrome(db);
   if (!chrome) notFound();
   const brief = callbackBrief(detail, config.brand.ownerFirstName, config.brand.spokenName, {
-    callback: callbackName(config),
+    callback: callbackCaller(config),
     propertyLines: config.intake.includes("maps_visible"),
   });
 

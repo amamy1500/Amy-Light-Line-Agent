@@ -141,7 +141,7 @@ describe("urgent alerts", () => {
     id: "x", kind: "urgent", channel, toAddress: "+15125550198", attempts: 1, leadId: "11111111-1111-4111-8111-111111111111",
     callId: null, brandName: "The Christmas Light Guys", campaignName: "TV", channelLabel: "tv", contactPhone: "+15125550147",
     contactName: "Nora", address: "41 Quarry Rd", serviceWanted: null, timing: null, callbackWindow: null, hasRecording: false,
-    companyName: "The Christmas Light Guys", companyKind: "company", summary: null, intent: "unknown", email: null, siteVisit: null, detail,
+    companyName: "The Christmas Light Guys", companyKind: "company", summary: null, intent: "unknown", email: null, siteVisit: null, mapsVisible: null, detail,
   });
 
   it("say URGENT and why, first thing, by text and by email", () => {
@@ -188,7 +188,14 @@ describe("on a live call", () => {
   it("the agent is told who answers the phones, who calls back, and what day it is", async () => {
     const twiml = await handleInbound({ CallSid: sid(), From: "+15125550401", To: LINE }, voice());
     expect(param(twiml, "owner_name")).toBe("Amy");
-    expect(param(twiml, "callback_name")).toBe("Josh");
+    // Callers hear "our team", and the team calls on weekdays, 9 to 5 (Amy, 2026-10-29).
+    expect(param(twiml, "callback_name")).toBe("our team");
+    expect(param(twiml, "callback_hours")).toBe("on weekdays, between nine and five");
+    expect(param(twiml, "callback_question")).toBe(
+      "Our team returns calls on weekdays, between nine and five. When would be the best time to give you a call?",
+    );
+    // Tuesday at 11 PM: the next times are tomorrow.
+    expect(param(twiml, "callback_choice")).toBe("tomorrow morning or afternoon");
     expect(param(twiml, "assistant_role")).toBe("The Christmas Light Guys' AI assistant");
     expect(param(twiml, "today")).toBe("Tuesday, October 20, 2026 at 11:00 PM (America/Chicago)");
   });

@@ -29,6 +29,7 @@ const SECTION_LABEL: Record<SettingsSection, string> = {
   answering: "Who answers",
   owner: "Owner & ring phone",
   hours: "Hours & closed days",
+  callbacks: "Callback hours",
   spam: "Spam screening",
   alerts: "Alerts",
   callers: "Safety & languages",
@@ -231,6 +232,27 @@ export default async function Settings({
                   placeholder={"2026-11-26 Thanksgiving\n2026-12-25 Christmas Day"}
                 />
               </Row>
+            </SectionForm>
+          </Section>
+
+          <Section id="callbacks" icon="phone" title="Callback hours" lead="When callers get called back. The assistant tells callers these hours, and offers the next weekday to anyone who asks for a weekend or an evening." scope="All companies">
+            <SectionForm section="callbacks" saved={saved("callbacks")} error={failed("callbacks")}>
+              <div className="hours" role="group" aria-label="Callback hours">
+                {[1, 2, 3, 4, 5, 6, 0].map((day) => {
+                  const w = config.callbackHours?.find((h) => h.day === day);
+                  return (
+                    <div key={day} className="day">
+                      <Switch name={`cb_day_${day}`} defaultChecked={Boolean(w)} label={DAYS[day]!} />
+                      <input type="time" name={`cb_open_${day}`} className="field" defaultValue={w?.open ?? "09:00"} aria-label={`${DAYS[day]} callbacks start`} />
+                      <span className="to">to</span>
+                      <input type="time" name={`cb_close_${day}`} className="field" defaultValue={w?.close ?? "17:00"} aria-label={`${DAYS[day]} callbacks end`} />
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="meta" style={{ margin: 0 }}>
+                {config.callbackHours?.length ? "" : "Not set: callers can pick any time. "}A day switched off gets no callbacks.
+              </p>
             </SectionForm>
           </Section>
 

@@ -169,21 +169,34 @@ export const SafetySettings = z.object({
 export type SafetySettings = z.infer<typeof SafetySettings>;
 export const DEFAULT_SAFETY: SafetySettings = { utilityName: "Austin Energy", utilityPhone: "+15123229100" };
 
+/** Configs saved before 2026-10-29 named whoever calls back `callbackFirstName`. */
+function renameLegacyCallbackField(brand: unknown): unknown {
+  if (!brand || typeof brand !== "object" || !("callbackFirstName" in brand)) return brand;
+  const { callbackFirstName, ...rest } = brand as Record<string, unknown>;
+  return { callbackBy: callbackFirstName, ...rest };
+}
+
 export const BusinessConfig = z.object({
   configVersion: z.string().min(1),
-  brand: z.object({
-    /** Spoken name, e.g. "The Christmas Light Guys". */
-    spokenName: z.string().min(1),
-    /** The person callers want, e.g. "Amy". The agent never claims to be them. */
-    ownerFirstName: z.string().min(1),
-    /**
-     * Who calls sales leads back and talks design and pricing, e.g. "Josh".
-     * Absent: the owner. The agent never claims to be them either.
-     */
-    callbackFirstName: z.string().min(1).optional(),
-    /** How the agent describes itself, e.g. "Amy's AI assistant". */
-    assistantRole: z.string().min(1),
-  }),
+  brand: z.preprocess(
+    renameLegacyCallbackField,
+    z.object({
+      /** Spoken name, e.g. "The Christmas Light Guys". */
+      spokenName: z.string().min(1),
+      /** The person callers want, e.g. "Amy". The agent never claims to be them. */
+      ownerFirstName: z.string().min(1),
+      /**
+       * How the assistant names whoever calls sales leads back: a first name
+       * ("Josh") or a team ("our team"). Absent: the owner. The agent never
+       * claims to be them either.
+       */
+      callbackBy: z.string().min(1).max(40).optional(),
+      /** How the agent describes itself, e.g. "Amy's AI assistant". */
+      assistantRole: z.string().min(1),
+      /** The owner's own goodbye, said word for word. Absent: a plain one that fits the time of day. */
+      goodbye: z.string().min(1).max(200).optional(),
+    }),
+  ),
   profile: BusinessProfile,
   timezone: z.string().min(1),
   /**
@@ -191,6 +204,12 @@ export const BusinessConfig = z.object({
    * answers. Which phone rings, and for how long, is set per tracking number.
    */
   ringHours: z.array(WeeklyHours),
+  /**
+   * When leads get called back. The assistant asks for a time inside these
+   * hours and steers a caller who picks a weekend or an evening to the next
+   * one. Absent: any time the caller likes.
+   */
+  callbackHours: z.array(WeeklyHours).optional(),
   /** Whole days closed; they override ringHours. Older configs have none. */
   closures: z.array(ClosedDay).max(60).default([]),
   screening: ScreeningSettings.default(DEFAULT_SCREENING),
@@ -251,9 +270,18 @@ export function parseBusinessConfig(input: unknown): BusinessConfig {
   return result.data;
 }
 
-/** Who calls a sales lead back: the configured callback person, else the owner. */
+/** Who calls a sales lead back, as the assistant says it: the configured person or team, else the owner. */
 export function callbackName(config: BusinessConfig): string {
-  return config.brand.callbackFirstName ?? config.brand.ownerFirstName;
+  return config.brand.callbackBy ?? config.brand.ownerFirstName;
+}
+
+/**
+ * Who actually dials a lead back: the callback person, or the owner when
+ * callers are told "our team" (Amy calls everyone back, 2026-10-29).
+ */
+export function callbackCaller(config: BusinessConfig): string {
+  const by = config.brand.callbackBy;
+  return by && !/^(our|the|someone)\b/i.test(by) ? by : config.brand.ownerFirstName;
 }
 
 /** Facts the agent may state. Drafts and rejected facts never leave this function. */

@@ -34,6 +34,13 @@ export const URGENT_LABEL: Record<UrgentKind, string> = {
   official: "Media, police, city or HOA",
 };
 
+/** What the Google Maps answer means for the callback (Amy, 2026-10-29); null when there's nothing to do. */
+function mapsNote(mapsVisible: string | null): string | null {
+  if (mapsVisible === "no") return "site visit to schedule: hard to see on Google Maps";
+  if (mapsVisible === "unsure") return "check Google Maps first: the caller wasn't sure it shows";
+  return null;
+}
+
 export function renderAlert(alert: PendingAlert, baseUrl: string): RenderedAlert {
   if (alert.kind === "digest") return renderDigest(alert, baseUrl);
   const link = new URL(`/leads/${alert.leadId}`, baseUrl).toString();
@@ -44,11 +51,12 @@ export function renderAlert(alert: PendingAlert, baseUrl: string): RenderedAlert
   const company = alert.companyKind === "front_desk" ? "Company not given" : alert.companyName;
   const line = `${company} · ${sourceLabel(alert.channelLabel)}`;
   const urgent = alert.kind === "urgent" && alert.detail?.urgent ? `${URGENT_LABEL[alert.detail.urgent]}: ${alert.detail.summary ?? ""}`.trim() : null;
-  const details = [urgent, alert.address, alert.serviceWanted, alert.timing, alert.callbackWindow && `call ${alert.callbackWindow}`]
+  const visit = mapsNote(alert.mapsVisible);
+  const details = [urgent, alert.address, alert.serviceWanted, alert.timing, alert.callbackWindow && `call ${alert.callbackWindow}`, visit]
     .filter(Boolean)
     .join("; ");
   const action = alert.kind === "answered" ? "Log the outcome" : alert.kind === "review" ? "Review" : "Call back";
-  const subject = `${line}: ${HEADLINE[alert.kind](who)}`;
+  const subject = `${line}: ${HEADLINE[alert.kind](who)}${alert.mapsVisible === "no" ? " (site visit to schedule)" : ""}`;
 
   if (alert.channel === "email") {
     // The email is the call's record in Amy's inbox: everything at a glance.
@@ -64,6 +72,7 @@ export function renderAlert(alert: PendingAlert, baseUrl: string): RenderedAlert
       alert.serviceWanted ? `Wants: ${alert.serviceWanted}` : null,
       alert.timing ? `Timing: ${alert.timing}` : null,
       alert.callbackWindow ? `Best time to call: ${alert.callbackWindow}` : null,
+      visit ? `Google Maps: ${visit}` : null,
       alert.siteVisit ? `Site visit could be: ${alert.siteVisit}` : null,
       "",
       `${action}: ${link}`,

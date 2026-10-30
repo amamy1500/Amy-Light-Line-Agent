@@ -63,6 +63,40 @@ describe("db:deploy", () => {
     expect((await aiOf(db)).clg.version).toBe(version);
   });
 
+  it("brings an office seeded on 2026-10-29 up to this release: 'our team', weekday callback hours, Amy's goodbye", async () => {
+    await prepareDatabase(db, ENV, quiet);
+    const { clg } = await aiOf(db);
+    // As the live office was seeded that morning: Josh named, no callback hours, no goodbye.
+    const { callbackBy: _, goodbye: __, ...brand } = parseBusinessConfig(clg.config).brand;
+    const seeded = parseBusinessConfig(clg.config);
+    await activateConfig(db, {
+      tenantId: clg.tenantId,
+      businessId: clg.businessId,
+      config: parseBusinessConfig({
+        ...seeded,
+        configVersion: "clg-2026.10.29-1",
+        brand: { ...brand, callbackFirstName: "Josh" },
+        profile: { ...seeded.profile, collect: seeded.profile.collect.replace("our team", "Josh") },
+        callbackHours: undefined,
+      }),
+      createdBy: "scripts/db-deploy.ts",
+    });
+
+    const log: string[] = [];
+    await prepareDatabase(db, ENV, (m) => log.push(m));
+    expect(log).toContain("Christmas Light Guys: config clg-2026.10.29-2");
+    const now = parseBusinessConfig((await aiOf(db)).clg.config);
+    expect(now.brand.callbackBy).toBe("our team");
+    expect(now.brand.goodbye).toMatch(/^Thanks for calling The Christmas Light Guys, we are looking forward/);
+    expect(now.callbackHours).toEqual([1, 2, 3, 4, 5].map((day) => ({ day, open: "09:00", close: "17:00" })));
+    expect(now.profile.collect).toContain("the best time for our team to call back");
+
+    // The next deploy has nothing to do.
+    const version = (await aiOf(db)).clg.version;
+    await prepareDatabase(db, ENV, quiet);
+    expect((await aiOf(db)).clg.version).toBe(version);
+  });
+
   it("puts Amy's ring number on every line once it is set", async () => {
     await prepareDatabase(db, ENV, quiet);
     await prepareDatabase(db, { ...ENV, OWNER_RING_E164: "+15125550177" }, quiet);

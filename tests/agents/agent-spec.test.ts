@@ -28,7 +28,7 @@ describe("agent spec", () => {
     const sent = buildDynamicVariables({
       callSid: `CA${"1".repeat(32)}`, sessionId: "00000000-0000-4000-8000-000000000000", callerNumber: null,
       entry: "after_hours", returningContext: null, handoffNote: null, ringHoursNote: "x", opening: "y",
-      companyName: null, companyContext: "z", ownerName: "Amy", callbackName: "Josh", assistantRole: "Amy's AI assistant", today: "Friday",
+      companyName: null, companyContext: "z", ownerName: "Amy", callbackName: "our team", callbackHours: "on weekdays, between nine and five", callbackQuestion: "q", callbackChoice: "Monday morning or afternoon", assistantRole: "Amy's AI assistant", today: "Friday",
     });
     expect(Object.keys(sent).sort()).toEqual([...DYNAMIC_VARIABLE_KEYS].sort());
     expect(Object.values(sent).every((v) => typeof v === "string" && v.length > 0)).toBe(true);
@@ -89,13 +89,14 @@ describe("agent spec", () => {
       expect(line).toContain("AI assistant, an automated system, not a person");
       expect(line).toContain("This call is recorded and transcribed");
       expect(line).toContain("by our AI service providers");
-      // Short enough to sit through: the greeting can't be talked over. Amy's Josh
-      // sentence (2026-10-29) costs about 13 words; naming where Amy is, 7 more;
+      // Short enough to sit through: the greeting can't be talked over. Amy's callback
+      // sentence (2026-10-29) costs about 14 words; naming where Amy is, 7 more;
       // ending on the first question saves the caller a turn, 7 more.
       const amyNamed = entry === "owner_unavailable" || entry === "owner_busy";
-      expect(line.split(/\s+/).length).toBeLessThanOrEqual(amyNamed ? 68 : 61);
+      expect(line.split(/\s+/).length).toBeLessThanOrEqual(amyNamed ? 69 : 62);
       expect(line).toMatch(/What are you looking to have done\?$/);
-      expect(line).toContain("so Josh knows how to help on the callback");
+      // Amy's approved words (2026-10-29 evening): "our team", never a name.
+      expect(line).toContain("so our team knows how to help on the callback");
       expect(scanConversation([{ role: "agent", text: line }]).violations).toEqual([]);
     }
     // Amy is named only when we know where she is (Amy, 2026-10-29).
@@ -106,10 +107,16 @@ describe("agent spec", () => {
     expect(openingLine(config, "handoff_failed")).toContain("You're back with the AI assistant");
   });
 
-  it("the prompt carries Amy's lines: Google Maps, the callback time, and don't guess", () => {
+  it("the prompt carries Amy's lines: Google Maps, the callback time, the visit, the goodbye and don't guess", () => {
     for (const must of [
       "Is the front of your home and the roofline pretty easy to see on Google Maps, or is it mostly hidden by trees?",
-      "When would be the best time for {{callback_name}} to give you a call?",
+      'Ask: "{{callback_question}}"',
+      "I'm sorry, {{callback_name}} only makes calls {{callback_hours}}. Would {{callback_choice}} work for you?",
+      "Thanks for letting me know. Since it's hard to see on Google Maps, {{callback_name}} will call you to set up a time to come take a look.",
+      "No problem. {{callback_name}} will check, and if it's hard to see, they'll call to set up a time to come take a look.",
+      "{{callback_name}} will call you to go over the options.",
+      "if About this company gives a goodbye, say it word for word",
+      "never ask a third time",
       "Is the number you're calling from the best one for {{callback_name}} to reach you?",
       "I want to make sure I have the street right.",
       "I've got everything saved for {{callback_name}}",
@@ -137,7 +144,9 @@ describe("agent spec", () => {
   it("Amy's approved price answer offers no Google Maps review and no site visit", async () => {
     const { CLG_AMY_DECISIONS } = await import("@/lib/knowledge/tenants/clg-decisions");
     const quote = CLG_AMY_DECISIONS.find((d) => d.key === "quote_process")!;
-    expect(quote.text).toMatch(/^Josh handles the pricing/);
+    expect(quote.text).toMatch(/^Our team handles pricing/);
+    // Callers hear "our team", never a name (Amy, 2026-10-29 evening).
+    for (const d of CLG_AMY_DECISIONS) expect(d.text ?? "").not.toMatch(/\bJosh\b/);
     expect(quote.text).not.toMatch(/google maps|site visit/i);
     expect(CLG_AMY_DECISIONS.find((d) => d.key === "contact_email")!.status).toBe("rejected");
   });

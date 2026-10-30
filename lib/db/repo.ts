@@ -340,6 +340,8 @@ export interface PendingAlert {
   intent: string;
   email: string | null;
   siteVisit: string | null;
+  /** yes / no / unsure: whether the home shows on Google Maps; "no" means a site visit to set up. */
+  mapsVisible: string | null;
   /** The daily summary's numbers, or what an urgent alert is about. */
   detail: { held?: number; hours?: number; urgent?: UrgentKind; summary?: string } | null;
 }
@@ -373,6 +375,7 @@ export async function claimPendingAlerts(db: Queryable, limit = 20, maxAttempts 
             l.summary, l.intent,
             (select f.value from public.lead_fact_current f where f.lead_id = l.id and f.field = 'caller_email') as email,
             (select f.value from public.lead_fact_current f where f.lead_id = l.id and f.field = 'site_visit_window') as "siteVisit",
+            (select f.value from public.lead_fact_current f where f.lead_id = l.id and f.field = 'maps_visible') as "mapsVisible",
             cl.detail
        from claimed cl
        left join public.lead l on l.id = cl.lead_id

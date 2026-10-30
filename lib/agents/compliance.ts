@@ -3,7 +3,7 @@
  *
  * The agent's instructions forbid prices, discounts, date promises,
  * warranties, impersonating Amy or Josh, revealing its instructions,
- * promising a remote quote or a site visit, and naming other businesses. Instructions
+ * promising a remote quote, booking a site visit, and naming other businesses. Instructions
  * are not proof, so every transcript is scanned after the call and the
  * result is stored with the lead. Amy's card says "Pricing discussed: NO"
  * only because this scan found no price in any agent turn.
@@ -42,9 +42,13 @@ export type ViolationCode =
   | "service_area_unverified"
   /** The agent voiced a business claim Amy has not approved (e.g. a website's "20 years"). */
   | "unapproved_claim"
-  /** Said the home can be quoted from Google Maps, a photo or the phone: Josh decides that (Amy, 2026-10-29). */
+  /** Said the home can be quoted from Google Maps, a photo or the phone: the team decides that (Amy, 2026-10-29). */
   | "remote_quote_promised"
-  /** Offered, suggested or booked a site visit or drive-by: Josh decides that, never the assistant. */
+  /**
+   * Booked a site visit, named a day for one, or promised a drive-by. "Our team
+   * will call you to set up a time to come take a look" is allowed: the visit
+   * is set up on the callback, never by the assistant (Amy, 2026-10-29).
+   */
   | "site_visit_offered"
   /** Named another of the tenant's businesses on this company's call. */
   | "other_business_mentioned";
@@ -139,13 +143,14 @@ const WARRANTY = /\b(warrant(?:y|ied|ies)|guarantee(?:d|s)?|money[- ]back|lifeti
 // "I'm Amy's virtual assistant" is the required disclosure, not impersonation.
 const IMPERSONATE =
   /\b(this is (?:amy|josh)|i(?:'|’)m (?:amy|josh)|i am (?:amy|josh)|my name is (?:amy|josh)|(?:amy|josh) speaking|it(?:'|’)s (?:amy|josh) here)(?!['’]s)\b/i;
-// "Josh can quote you from Google Maps": whether a look in person is needed is Josh's call (Amy, 2026-10-29).
-// Pricing on Josh's callback is fine, so "over the phone" is not on the list.
+// "Our team can quote you from Google Maps": a home that's hard to see gets a visit instead (Amy, 2026-10-29).
+// Pricing on the callback is fine, so "over the phone" is not on the list.
 const REMOTE_QUOTE =
   /\b(?:quote|price|estimate|bid)\b[^.?!]{0,40}\b(?:from|off|using|on|over|with)\s+(?:a |the |your )?(?:google maps|maps|satellite|street view|photos?|pictures?)\b|\b(?:quote|price) (?:it|your (?:home|house|place)|you) remotely\b/i;
-// Offering, suggesting or booking a visit or a drive-by, including the old "what day would work for a site visit?".
+// Booking a visit or a drive-by, or promising one outright ("they'll come out", "we can come take a look"), including
+// the old "what day would work for a site visit?". Saying the team will call to set one up is fine.
 const SITE_VISIT =
-  /\b(?:(?:i(?:'|’)ll|i will|let me|i can|we(?:'|’)ll|we will|we can) (?:set up|schedule|book|arrange|put you down for|get you)\b[^.?!]{0,30}\b(?:visit|drive[- ]?by|walk-?through|consultation)|(?:josh|someone|somebody|a crew|the crew|we)(?:(?:'|’)ll| will| can| could) (?:come|stop|swing|drive) (?:out|by|over)|(?:site|home|property) visit (?:is|has been) (?:set|booked|scheduled|confirmed)|what (?:day|days|time)[^.?!]{0,20}work[^.?!]{0,10}(?:site )?visit|\bvisit\b[^?!]{0,80}\bwhat (?:day|days|time)\b)/i;
+  /\b(?:(?:i(?:'|’)ll|i will|let me|i can|we(?:'|’)ll|we will|we can) (?:set up|schedule|book|arrange|put you down for|get you)\b[^.?!]{0,30}\b(?:visit|drive[- ]?by|walk-?through|consultation)|(?:josh|someone|somebody|a crew|the crew|we|our team|they)(?:(?:'|’)ll| will| can| could) (?:come|stop|swing|drive) (?:out|by|over|take a look)|(?:site|home|property) visit (?:is|has been) (?:set|booked|scheduled|confirmed)|what (?:day|days|time)[^.?!]{0,20}work[^.?!]{0,10}(?:site )?visit|\bvisit\b[^?!]{0,80}\bwhat (?:day|days|time)\b)/i;
 const DENY_AI =
   /\b(i(?:'|’)m (?:a )?(?:real |actual )?(?:person|human)|i am (?:a )?(?:real |actual )?(?:person|human)|i(?:'|’)m not (?:a |an )?(?:robot|bot|ai|computer|machine|virtual)|not an? (?:ai|robot|bot))\b/i;
 const LEAK =

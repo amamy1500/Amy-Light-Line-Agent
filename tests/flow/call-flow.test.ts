@@ -184,7 +184,7 @@ describe("alerts", () => {
       id: "x", kind: "message", channel: "sms", toAddress: "+15125550198", attempts: 1, leadId: "11111111-1111-4111-8111-111111111111",
       callId: null, brandName: "The Christmas Light Guys", campaignName: "TV", channelLabel: "tv", contactPhone: "+15125550147",
       contactName: "Dana", address: "4512 Oak Cove ".repeat(20), serviceWanted: "roofline", timing: null, callbackWindow: null, hasRecording: true,
-      companyName: "Christmas Light Guys", companyKind: "company", summary: null, intent: "warm", email: null, siteVisit: null, detail: null,
+      companyName: "Christmas Light Guys", companyKind: "company", summary: null, intent: "warm", email: null, siteVisit: null, mapsVisible: null, detail: null,
     };
     const { body } = renderAlert(alert, BASE);
     expect(body.length).toBeLessThanOrEqual(320);
@@ -201,7 +201,7 @@ describe("alerts", () => {
             callId: null, brandName: "Amy's office line", campaignName: "Shared office line", channelLabel: "main_line",
             contactPhone: "+15125550147", contactName: "Dana", address: null, serviceWanted: "vending machine for my shop",
             timing: null, callbackWindow: "after 3", hasRecording: false,
-            companyName: "The Fridge", companyKind: "company", summary: "Dana wants a machine at her shop.", intent: "warm", email: "dana@example.com", siteVisit: null, detail: null,
+            companyName: "The Fridge", companyKind: "company", summary: "Dana wants a machine at her shop.", intent: "warm", email: "dana@example.com", siteVisit: null, mapsVisible: null, detail: null,
           },
           BASE,
         );
@@ -217,7 +217,7 @@ describe("alerts", () => {
         id: "x", kind: "agent_lead", channel: "sms", toAddress: "+15125550198", attempts: 1, leadId: "11111111-1111-4111-8111-111111111111",
         callId: null, brandName: "Amy's office line", campaignName: null, channelLabel: "main_line", contactPhone: "+15125550147",
         contactName: null, address: null, serviceWanted: null, timing: null, callbackWindow: null, hasRecording: false,
-        companyName: "Amy's office line", companyKind: "front_desk", summary: null, intent: "unknown", email: null, siteVisit: null, detail: null,
+        companyName: "Amy's office line", companyKind: "front_desk", summary: null, intent: "unknown", email: null, siteVisit: null, mapsVisible: null, detail: null,
       },
       BASE,
     );

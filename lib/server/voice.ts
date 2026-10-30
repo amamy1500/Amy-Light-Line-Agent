@@ -1,5 +1,6 @@
 import type { AgentConnector } from "@/lib/agents/connector";
 import type { VendorCircuit } from "@/lib/agents/circuit";
+import { callbackChoice, callbackHoursNote, callbackQuestionFor } from "@/lib/agents/callback-time";
 import { companyNotes, openingLine, sharedLineNotes } from "@/lib/agents/policy";
 import { callbackName, DEFAULT_SCREENING, type BusinessConfig } from "@/lib/business-rules/config";
 import {
@@ -230,6 +231,9 @@ async function connectAgent(
         companyContext: company.companyContext,
         ownerName: config.brand.ownerFirstName,
         callbackName: callbackName(config),
+        callbackHours: callbackHoursNote(config),
+        callbackQuestion: callbackQuestionFor(config),
+        callbackChoice: callbackChoice(config, deps.now()),
         assistantRole: config.brand.assistantRole,
         today: localNow(deps.now(), config.timezone),
       }),

@@ -7,7 +7,9 @@
  *   2. first deploy: seeds the office from the environment (CLG_MAIN_NUMBER,
  *      AI_MODE, ring hours, Amy's decisions); later deploys add knowledge
  *      items new in this release, and Amy's decisions on items still pending
- *   3. the agent id from AGENT_ID (set by scripts/deploy/render.ts), and
+ *   3. release defaults that changed since the office was seeded (who calls
+ *      back, callback hours, Amy's goodbye), where they still hold the old default
+ *   4. the agent id from AGENT_ID (set by scripts/deploy/render.ts), and
  *      Amy's ring number from OWNER_RING_E164 when it is set
  *
  * AI mode, hours and voice are seeded once and then belong to Settings and
@@ -17,6 +19,7 @@
  */
 import { pathToFileURL } from "node:url";
 import { parseBusinessConfig } from "@/lib/business-rules/config";
+import { upgradeChristmasLightGuysConfig } from "@/lib/business-rules/tenants/christmas-light-guys";
 import { migrations, seedOffice, type Queryable } from "@/lib/db";
 import { activateConfig } from "@/lib/db/config";
 import { officeBusinesses, primaryBusiness } from "@/lib/db/dashboard";
@@ -50,6 +53,14 @@ export async function prepareDatabase(db: Queryable, env: Env, log: Log = consol
   if (options.ownerDecisions) {
     const applied = await applyOwnerDecisions(db, { tenantId: clg.tenantId, businessId: clg.businessId, ...options.ownerDecisions });
     if (applied > 0) log(`applied ${applied} of Amy's decisions`);
+  }
+
+  const current = (await primaryBusiness(db))!;
+  const stored = parseBusinessConfig(current.config);
+  const upgraded = upgradeChristmasLightGuysConfig(stored);
+  if (upgraded !== stored) {
+    await activateConfig(db, { tenantId: current.tenantId, businessId: current.businessId, config: upgraded, createdBy: "scripts/db-deploy.ts" });
+    log(`${current.name}: config ${upgraded.configVersion}`);
   }
 
   if (options.agentId) {

@@ -143,7 +143,7 @@ describe("the Amy-ignores-the-call demo", () => {
     const price = await tool(call, "get_approved_answer", { topic: "price", question: "How much for the roofline?" });
     // Amy approved (demo seed) exactly one sentence for price questions: how quotes work. No number.
     expect(price.body).toMatchObject({ ok: true, found: true, fact_id: "quote_process" });
-    expect(String(price.body.answer)).toMatch(/^Josh handles the pricing/);
+    expect(String(price.body.answer)).toMatch(/^Our team handles pricing/);
     expect(String(price.body.answer)).not.toMatch(/\$|\d/);
 
     // 5. Service area is unconfirmed: the agent may not say yes or no.

@@ -8,6 +8,8 @@ import { formatUsPhone } from "@/lib/telephony/phone";
 export function Flags({ card }: { card: LeadCard }) {
   const s = card.compliance.summary;
   const flags: Array<{ text: string; tone: "ok" | "bad" | "neutral" }> = [];
+  if (card.mapsVisible === "no") flags.push({ text: "Site visit to schedule", tone: "neutral" });
+  if (card.mapsVisible === "unsure") flags.push({ text: "Check Google Maps first", tone: "neutral" });
   if (card.compliance.transcript === false && !card.compliance.recordingDeclined && card.source === "agent_call") {
     flags.push({ text: "Transcript not received yet", tone: "neutral" });
   }
