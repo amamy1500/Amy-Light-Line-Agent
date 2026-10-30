@@ -35,7 +35,7 @@ const PARAM_DESCRIPTIONS: Record<string, string> = {
   topic: "One or two words naming what the question is about (price, storage, takedown...).",
   question: "The caller's question in their words.",
   window: "The best time for the callback, in the caller's own words (e.g. tomorrow after 3).",
-  reason: "Why the caller wants a callback, briefly.",
+  reason: "Why the caller wants a callback, in one short line (under 200 characters).",
   urgent: "true only if the caller says it is urgent or time-sensitive.",
   summary: "A short summary for the owner: name, place, what they want, any timing.",
   outcome: "How the call ended.",

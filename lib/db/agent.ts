@@ -331,10 +331,22 @@ export async function returningCallerSummary(
   );
   const row = rows[0];
   if (!row) return null;
-  // A redial within minutes is usually a dropped call: pick up where it left off
-  // instead of starting over (docs/research/voice-agent-edge-cases.md F1).
-  if (Date.now() - new Date(row.last).getTime() < 15 * 60 * 1000) {
-    return `This number called a few minutes ago; the call may have dropped. Say "Looks like we got cut off. Where were we?" and don't ask again for anything save_lead_details says you already have.`;
+  // A redial within minutes of a call that dropped part-way (details saved, never
+  // wrapped up) picks up where it left off instead of starting over
+  // (docs/research/voice-agent-edge-cases.md F1). A call that ended properly, or
+  // hung up before saying anything, isn't one: "we got cut off" would be wrong.
+  const { rows: dropped } = await db.query(
+    `select 1 from public.call c
+      where c.business_id = $1 and c.from_e164 = $2 and c.id <> $3
+        and c.started_at > now() - interval '15 minutes'
+        and exists (select 1 from public.lead_fact f where f.call_id = c.id and f.source = 'caller_via_agent')
+        and not exists (select 1 from public.agent_session s
+                         where s.call_id = c.id and coalesce((s.metadata ->> 'wrapped_up')::boolean, false))
+      limit 1`,
+    [input.businessId, input.phone, input.excludeCallId],
+  );
+  if (dropped.length > 0) {
+    return `This number called a few minutes ago and the call dropped part-way. Say "Looks like we got cut off. Where were we?" and don't ask again for anything save_lead_details says you already have.`;
   }
   const month = new Date(row.last).toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "America/Chicago" });
   const parts = [`This number has contacted us before (most recently ${month})`];

@@ -194,9 +194,24 @@ describe("on a live call", () => {
   });
 
   it("a redial within minutes picks up where the dropped call left off (F1)", async () => {
-    await handleInbound({ CallSid: sid(), From: "+15125550402", To: LINE }, voice());
+    const first = sid();
+    await handleInbound({ CallSid: first, From: "+15125550402", To: LINE }, voice());
+    await tool(first, "save_lead_details", { caller_name: "Dana" });
     const again = await handleInbound({ CallSid: sid(), From: "+15125550402", To: LINE }, voice());
     expect(param(again, "returning_context")).toContain("Looks like we got cut off");
+  });
+
+  it("no 'cut off' after a call that hung up at once, or one that ended properly (second live call, 2026-10-29)", async () => {
+    await handleInbound({ CallSid: sid(), From: "+15125550406", To: LINE }, voice());
+    const afterHangUp = await handleInbound({ CallSid: sid(), From: "+15125550406", To: LINE }, voice());
+    expect(param(afterHangUp, "returning_context")).not.toContain("cut off");
+
+    const finished = sid();
+    await handleInbound({ CallSid: finished, From: "+15125550407", To: LINE }, voice());
+    await tool(finished, "save_lead_details", { caller_name: "Lee" });
+    await tool(finished, "finish_call", { outcome: "callback_requested", summary: "Lee wants roofline lights." });
+    const afterFinish = await handleInbound({ CallSid: sid(), From: "+15125550407", To: LINE }, voice());
+    expect(param(afterFinish, "returning_context")).not.toContain("cut off");
   });
 
   it("a danger report texts Amy at once, once per call, and the callback is urgent", async () => {
