@@ -35,8 +35,8 @@ const NEVER: Record<string, string> = {
 
 /** The customer history the agent sees for this test's caller (the returning_context variable). */
 const RETURNING: Record<NonNullable<Scenario["returning"]>, string> = {
-  customer: "This number has contacted us before (most recently December 2025) and has been a customer. Acknowledge warmly without reciting details, and ask what they need this time.",
-  contacted: "This number has contacted us before (most recently November 2025). Acknowledge warmly without reciting details, and ask what they need this time.",
+  customer: "This number has been a customer (most recently December 2025). Acknowledge warmly without reciting details, and ask what they need this time.",
+  contacted: "This number has called before (most recently November 2025) but has never been a customer. Treat them like any new caller: don't say they've worked with us, don't welcome them back, and don't save customer_type returning unless they say they're a past customer.",
 };
 
 /** What a correct agent does once something urgent comes up (docs/research/voice-agent-edge-cases.md). */

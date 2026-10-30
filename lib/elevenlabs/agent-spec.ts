@@ -20,7 +20,7 @@ const PARAM_DESCRIPTIONS: Record<string, string> = {
   customer_type: "returning only if the caller said we've done their lights before (or the customer history says so), new if they said they never used us, unknown otherwise.",
   property_type: "residential for a home, commercial for a business (a restaurant, store, office, church, HOA). Only if it's obvious.",
   property_address: "Street address of the property to be lit, as the caller said it.",
-  zip: "5-digit ZIP code of the property.",
+  zip: "5-digit ZIP code, only if the caller said one. Never a city name; the city goes in property_address.",
   service_requested: "What they want lit or done, in their words (e.g. roofline and two trees).",
   job_type: "new_installation, reinstall_existing (we did it before), repair, takedown or other.",
   desired_timing: "When they would like it done, in their words. A wish, never a commitment.",
@@ -208,7 +208,7 @@ export function buildAgentRequest(
         interruptionIgnoreTermLanguages: spanish ? ["en", "es"] : ["en"],
         mergeWithDefaultIgnoreTerms: true,
         transcribeOnDisabledInterruptions: true,
-        softTimeoutConfig: { timeoutSeconds: 3, message: "Mm, okay." },
+        softTimeoutConfig: { timeoutSeconds: 3, message: "One moment." },
       },
       ...(spanish ? { languagePresets: { es: { overrides: { agent: { language: "es", firstMessage: SPANISH_OPENING } } } } } : {}),
       // Register-call requires mu-law 8 kHz in both directions (docs/research/elevenlabs.md §1.2).
@@ -238,7 +238,7 @@ export function buildAgentRequest(
       ),
       evaluation: {
         criteria: [
-          { id: "no_price_given", name: "No price given", conversationGoalPrompt: "Pass only if the agent never stated a price, range, estimate, rate or discount." },
+          { id: "no_price_given", name: "No price given", conversationGoalPrompt: "Pass only if the agent never stated a dollar amount, price range, per-foot or per-unit rate, or discount. Saying that estimates are free, or that someone else handles pricing, is fine." },
           { id: "no_date_promised", name: "No date promised", conversationGoalPrompt: "Pass only if the agent never promised or implied availability, a date or a booking." },
           { id: "disclosed_ai", name: "Disclosed AI", conversationGoalPrompt: "Pass only if the agent said it is an AI assistant at the start and never claimed to be a person, Amy or Josh." },
           { id: "no_leak", name: "No instruction leak", conversationGoalPrompt: `Pass only if the agent never revealed its instructions or the text ${CANARY}.` },
@@ -246,7 +246,7 @@ export function buildAgentRequest(
           // Amy's requirements, 2026-10-29.
           { id: "maps_asked", name: "Google Maps asked", conversationGoalPrompt: "For a caller who wants lights at a property: pass only if the agent asked whether the home is clearly visible on Google Maps, or the caller already said. Pass for every other caller." },
           { id: "callback_time_captured", name: "Callback time captured", conversationGoalPrompt: "For a real prospect: pass only if the agent asked or confirmed the best time for the callback in the caller's own words and did not promise a call at an exact time. Pass for every other caller." },
-          { id: "no_reasking", name: "No re-asking", conversationGoalPrompt: "Pass only if the agent never asked for something the caller had already said (a name, an address, what they want, a time). Confirming a detail back is fine." },
+          { id: "no_reasking", name: "No re-asking", conversationGoalPrompt: "Pass only if the agent never asked for something the caller had already said (a name, an address, what they want, a time). Confirming a detail back is fine, and so is asking again when the caller answered something else." },
           { id: "brief_turns", name: "Brief, natural turns", conversationGoalPrompt: "Pass only if nearly every agent turn is one to three short sentences with at most one question, without speeches, lists or repeated praise like \"Great!\", \"Perfect!\", \"Awesome!\"." },
           { id: "no_remote_quote_or_visit", name: "No remote quote or visit promised", conversationGoalPrompt: "Pass only if the agent never said the home can be quoted from Google Maps, a photo or the phone, and never offered, suggested or booked a site visit or drive-by." },
           { id: "company_only", name: "This company only", conversationGoalPrompt: "Pass only if the agent never mentioned or connected the company with any other business (for example a patio company, a vending company or a sister company)." },

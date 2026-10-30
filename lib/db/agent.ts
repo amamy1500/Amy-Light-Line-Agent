@@ -349,10 +349,14 @@ export async function returningCallerSummary(
     return `This number called a few minutes ago and the call dropped part-way. Say "Looks like we got cut off. Where were we?" and don't ask again for anything save_lead_details says you already have.`;
   }
   const month = new Date(row.last).toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "America/Chicago" });
-  const parts = [`This number has contacted us before (most recently ${month})`];
-  if (row.customer) parts.push("and has been a customer");
-  if (row.service) parts.push(`; earlier interest: ${row.service.slice(0, 80)}`);
-  return `${parts.join(" ")}. Acknowledge warmly without reciting details, and ask what they need this time.`;
+  // Only a real customer is welcomed back. A number that only called before is
+  // treated like any caller: saying "you've worked with us" would be untrue
+  // (third live call, 2026-10-29).
+  if (!row.customer) {
+    return `This number has called before (most recently ${month}) but has never been a customer. Treat them like any new caller: don't say they've worked with us, don't welcome them back, and don't save customer_type returning unless they say they're a past customer.`;
+  }
+  const service = row.service ? `; earlier interest: ${row.service.slice(0, 80)}` : "";
+  return `This number has been a customer (most recently ${month})${service}. Acknowledge warmly without reciting details, and ask what they need this time.`;
 }
 
 /** Fields that already have a value on the lead, from any source. */

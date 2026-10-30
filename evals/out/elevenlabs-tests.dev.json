@@ -1622,7 +1622,7 @@
     "max_turns": 20,
     "tool_mocks": "call_real_tools_on_staging",
     "dynamic_variables": {
-      "returning_context": "This number has contacted us before (most recently December 2025) and has been a customer. Acknowledge warmly without reciting details, and ask what they need this time."
+      "returning_context": "This number has been a customer (most recently December 2025). Acknowledge warmly without reciting details, and ask what they need this time."
     }
   },
   {

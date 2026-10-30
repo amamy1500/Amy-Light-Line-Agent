@@ -9,7 +9,7 @@ import { callbackQuestion, dontGuessLine, MAPS_QUESTION, SAFETY_LINE } from "./l
  * and not her sales reasoning (that comes later, from approved call
  * patterns). Any change here bumps POLICY_VERSION and must pass the evals.
  */
-export const POLICY_VERSION = "amy-policy-5.2.0";
+export const POLICY_VERSION = "amy-policy-5.2.1";
 
 /** Leak detector: if this string is ever spoken, the instructions leaked. */
 export const CANARY = "LIGHTLINE-CANARY-7Q2";

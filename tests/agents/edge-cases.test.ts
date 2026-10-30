@@ -212,6 +212,9 @@ describe("on a live call", () => {
     await tool(finished, "finish_call", { outcome: "callback_requested", summary: "Lee wants roofline lights." });
     const afterFinish = await handleInbound({ CallSid: sid(), From: "+15125550407", To: LINE }, voice());
     expect(param(afterFinish, "returning_context")).not.toContain("cut off");
+    // Called before is not a customer: no "welcome back" (third live call, 2026-10-29).
+    expect(param(afterFinish, "returning_context")).toContain("never been a customer");
+    expect(param(afterFinish, "returning_context")).not.toMatch(/Acknowledge warmly/);
   });
 
   it("a danger report texts Amy at once, once per call, and the callback is urgent", async () => {

@@ -287,7 +287,7 @@ export const TOOLS = {
           still_needed: next,
           instruction: next.length
             ? `Acknowledge briefly, then ask naturally for ${askFor(next[0]!, deps.config)}. One question at a time.`
-            : `You have what ${callbackName(deps.config)} needs. Confirm the best number if you haven't, then call request_callback and wrap up.`,
+            : `You have what ${callbackName(deps.config)} needs. Confirm the best number if you haven't, ask once whether there's anything else they'd like ${callbackName(deps.config)} to know, then call request_callback and wrap up.`,
         },
       };
     },
