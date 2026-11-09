@@ -12,6 +12,8 @@ const READY: ReadinessInput = {
     databaseUrl: "postgres://db.example.com/lightline",
     operatorToken: SECRET,
     alertMode: "live",
+    gmailUser: undefined,
+    gmailAppPassword: undefined,
     resendApiKey: SECRET,
     alertEmailFrom: "alerts@example.com",
     agentProvider: "elevenlabs",

@@ -416,6 +416,25 @@ export async function claimPendingAlerts(db: Queryable, limit = 20, maxAttempts 
   return rows;
 }
 
+/**
+ * Puts leads' call emails back in the queue, so leads saved while email was off (simulate
+ * mode) reach the inbox once it's on. One email per lead, its newest call's, and only one
+ * that was never really sent. Returns how many were queued.
+ */
+export async function requeueLeadEmails(db: Queryable, leadIds: string[]): Promise<number> {
+  const { rows } = await db.query<{ id: string }>(
+    `update public.outbox o
+        set status = 'pending', attempts = 0, last_error = null, claimed_until = null, sent_at = null
+      where o.id in (
+        select distinct on (lead_id) id from public.outbox
+         where lead_id = any($1::uuid[]) and channel = 'email' and kind = 'agent_lead' and status = 'simulated'
+         order by lead_id, created_at desc)
+      returning o.id`,
+    [leadIds],
+  );
+  return rows.length;
+}
+
 export async function settleAlert(
   db: Queryable,
   input: { id: string; status: "sent" | "simulated" | "failed" | "pending"; error?: string | null },

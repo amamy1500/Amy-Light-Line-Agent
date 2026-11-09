@@ -79,7 +79,7 @@ describe("the lead email", () => {
 describe("sending the lead email", () => {
   it("attaches the call recording from the voice vendor", async () => {
     const net = network({ status: 200, bytes: new Uint8Array([73, 68, 51, 4]) });
-    expect(await senderFromEnv(liveEnv, net.fetchImpl).send(lead(), renderAlert(lead(), BASE))).toBe("sent");
+    expect(await senderFromEnv(liveEnv, { fetchImpl: net.fetchImpl }).send(lead(), renderAlert(lead(), BASE))).toBe("sent");
     expect(net.requests[0]!.url).toBe("https://api.elevenlabs.io/v1/convai/conversations/conv_123/audio");
     const email = net.sent()!;
     expect(email).toMatchObject({ to: ["thelightguysaustin@gmail.com"], from: "Lightline <alerts@example.test>" });
@@ -91,7 +91,7 @@ describe("sending the lead email", () => {
   it("attaches a voicemail from Twilio, fetched with the account's credentials", async () => {
     const voicemail = lead({ kind: "message", conversationId: null, agentProvider: null, recordingUrl: "https://api.twilio.com/2010-04-01/Accounts/AC_test/Recordings/RE1" });
     const net = network({ status: 200, bytes: new Uint8Array([1, 2, 3]) });
-    await senderFromEnv(liveEnv, net.fetchImpl).send(voicemail, renderAlert(voicemail, BASE));
+    await senderFromEnv(liveEnv, { fetchImpl: net.fetchImpl }).send(voicemail, renderAlert(voicemail, BASE));
     const media = net.requests.find((r) => r.url.endsWith("RE1.mp3"))!;
     expect((media.init!.headers as Record<string, string>).authorization).toBe(`Basic ${Buffer.from("AC_test:twilio_test").toString("base64")}`);
     expect(net.sent()!.attachments).toHaveLength(1);
@@ -100,19 +100,55 @@ describe("sending the lead email", () => {
   it("never fetches or attaches audio when the caller declined recording", async () => {
     const declined = lead({ recordingDeclined: true, transcript: null });
     const net = network({ status: 200, bytes: new Uint8Array([1]) });
-    await senderFromEnv(liveEnv, net.fetchImpl).send(declined, renderAlert(declined, BASE));
+    await senderFromEnv(liveEnv, { fetchImpl: net.fetchImpl }).send(declined, renderAlert(declined, BASE));
     expect(net.requests.map((r) => r.url)).toEqual(["https://api.resend.com/emails"]);
     expect(net.sent()!.attachments).toBeUndefined();
   });
 
   it("waits for audio the vendor hasn't finished, then sends without it rather than lose the lead", async () => {
     const early = network({ status: 404 });
-    await expect(senderFromEnv(liveEnv, early.fetchImpl).send(lead({ attempts: 1 }), renderAlert(lead(), BASE))).rejects.toThrow(/not ready/);
+    await expect(senderFromEnv(liveEnv, { fetchImpl: early.fetchImpl }).send(lead({ attempts: 1 }), renderAlert(lead(), BASE))).rejects.toThrow(/not ready/);
     expect(early.sent()).toBeNull();
 
     const late = network({ status: 404 });
-    expect(await senderFromEnv(liveEnv, late.fetchImpl).send(lead({ attempts: 3 }), renderAlert(lead(), BASE))).toBe("sent");
+    expect(await senderFromEnv(liveEnv, { fetchImpl: late.fetchImpl }).send(lead({ attempts: 3 }), renderAlert(lead(), BASE))).toBe("sent");
     expect(late.sent()!.attachments).toBeUndefined();
     expect(late.sent()!.text).toContain("The recording couldn't be attached this time.");
+  });
+});
+
+describe("sending through the business Gmail", () => {
+  const gmailEnv = readEnv({
+    NODE_ENV: "test", PUBLIC_BASE_URL: BASE, ALERT_MODE: "live", ELEVENLABS_API_KEY: "el_test",
+    GMAIL_USER: "thelightguysaustin@gmail.com", GMAIL_APP_PASSWORD: "abcd efgh ijkl mnop",
+    // Resend set as well: Gmail still wins, so the email comes from Amy's own address.
+    RESEND_API_KEY: "re_test", ALERT_EMAIL_FROM: "Lightline <alerts@example.test>",
+  });
+
+  it("takes the app password the way Google shows it, spaces and all", () => {
+    expect(gmailEnv.gmailAppPassword).toBe("abcdefghijklmnop");
+  });
+
+  it("sends from the business Gmail to itself, with the recording attached, and never calls Resend", async () => {
+    const net = network({ status: 200, bytes: new Uint8Array([73, 68, 51, 4]) });
+    const mails: Array<Record<string, unknown>> = [];
+    const smtp = { sendMail: async (message: Record<string, unknown>) => void mails.push(message) };
+    expect(await senderFromEnv(gmailEnv, { fetchImpl: net.fetchImpl, smtp }).send(lead(), renderAlert(lead(), BASE))).toBe("sent");
+    expect(net.sent()).toBeNull();
+    expect(mails).toHaveLength(1);
+    expect(mails[0]).toMatchObject({
+      from: { name: "The Christmas Light Guys (Lightline)", address: "thelightguysaustin@gmail.com" },
+      to: "thelightguysaustin@gmail.com",
+      subject: expect.stringContaining("Sam Patel"),
+    });
+    const [attachment] = mails[0]!.attachments as Array<{ filename: string; content: Buffer; contentType: string }>;
+    expect(attachment).toMatchObject({ filename: "call-2026-11-09-sam-patel.mp3", contentType: "audio/mpeg" });
+    expect([...attachment!.content]).toEqual([73, 68, 51, 4]);
+    expect(String(mails[0]!.html)).toContain("Open in Google Maps");
+  });
+
+  it("says what's missing when no email sender is set up", async () => {
+    const bare = readEnv({ NODE_ENV: "test", PUBLIC_BASE_URL: BASE, ALERT_MODE: "live" });
+    await expect(senderFromEnv(bare).send(lead({ recordingDeclined: true }), renderAlert(lead(), BASE))).rejects.toThrow(/GMAIL_USER and GMAIL_APP_PASSWORD/);
   });
 });

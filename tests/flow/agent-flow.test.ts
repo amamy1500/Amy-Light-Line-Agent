@@ -3,11 +3,12 @@ import { VendorCircuit } from "@/lib/agents/circuit";
 import { simulatorConnector, type AgentConnector } from "@/lib/agents/connector";
 import { runTool, type GatewayDeps } from "@/lib/agents/gateway";
 import { parseBusinessConfig } from "@/lib/business-rules/config";
-import { claimPendingAlerts, seedChristmasLightGuys, type Queryable } from "@/lib/db";
+import { claimPendingAlerts, requeueLeadEmails, seedChristmasLightGuys, type PendingAlert, type Queryable } from "@/lib/db";
 import { getCallContext } from "@/lib/db/agent";
 import { activateConfig, loadActiveConfig } from "@/lib/db/config";
 import { openPglite } from "@/lib/db/pglite";
 import { signLikeElevenLabs } from "@/lib/elevenlabs/webhook-signature";
+import { drainAlerts, simulatedSender, type AlertSender } from "@/lib/server/alerts";
 import { handlePostCallWebhook } from "@/lib/server/post-call-webhook";
 import {
   handleAgentEnded,
@@ -473,5 +474,32 @@ describe("runaway agent", () => {
     }
     expect(last!.body).toMatchObject({ ok: false, error: "tool_limit" });
     expect(String(last!.body.instruction)).toMatch(/finish_call/);
+  });
+});
+
+describe("leads saved while email was off", () => {
+  it("reach the inbox once email is on: each lead's newest call email, and never twice", async () => {
+    const call = sid();
+    const session = sessionOf(await handleInbound({ CallSid: call, From: caller(), To: TV }, voiceDeps(NIGHT)));
+    await tool(call, "save_lead_details", { caller_name: "Rosa", service_requested: "roofline lights" }, NIGHT);
+    await tool(call, "request_callback", { window: "tomorrow morning" }, NIGHT);
+    await tool(call, "finish_call", { outcome: "callback_requested", summary: "Rosa wants roofline lights; call tomorrow morning." }, NIGHT);
+    await postCall(call, session, `conv_${call}`, [{ role: "user", message: "Roofline lights, please." }]);
+    await handleStatus({ CallSid: call, CallStatus: "completed" }, voiceDeps(NIGHT));
+    await runDueJobs(db);
+    const ctx = (await getCallContext(db, call))!;
+    await drainAlerts(db, simulatedSender, BASE); // email was off: recorded, not sent
+
+    expect(await requeueLeadEmails(db, [ctx.leadId!])).toBe(1);
+    const sent: PendingAlert[] = [];
+    const live: AlertSender = {
+      async send(alert) {
+        sent.push(alert);
+        return "sent";
+      },
+    };
+    await drainAlerts(db, live, BASE);
+    expect(sent.filter((a) => a.leadId === ctx.leadId).map((a) => [a.kind, a.channel])).toEqual([["agent_lead", "email"]]);
+    expect(await requeueLeadEmails(db, [ctx.leadId!])).toBe(0);
   });
 });

@@ -2,6 +2,7 @@ import { claimPendingAlerts, settleAlert, type AlertKind, type PendingAlert, typ
 import type { UrgentKind } from "@/lib/db/repo";
 import { getConversationAudio } from "@/lib/elevenlabs/conversations";
 import { formatUsPhone } from "@/lib/telephony";
+import nodemailer from "nodemailer";
 import twilio from "twilio";
 import type { AppEnv } from "./env";
 import { sourceLabel } from "./voice";
@@ -280,8 +281,69 @@ function recordingFilename(alert: PendingAlert): string {
   return `call-${day}-${who || "caller"}.mp3`;
 }
 
-export function senderFromEnv(env: AppEnv, fetchImpl: typeof fetch = fetch): AlertSender {
+interface MailMessage {
+  /** Display name for the From line; the address is the sending account's own. */
+  fromName: string;
+  to: string;
+  subject: string;
+  text: string;
+  html?: string;
+  attachments: Array<{ filename: string; content: Uint8Array }>;
+}
+
+/** The slice of a nodemailer transport the Gmail path uses; tests pass a fake. */
+export interface SmtpTransport {
+  sendMail(message: Record<string, unknown>): Promise<unknown>;
+}
+
+/**
+ * How email leaves: the business Gmail when its app password is set (free, from Amy's own
+ * address, so it lands in her inbox), else Resend. Null when neither is set up.
+ */
+function mailerFromEnv(env: AppEnv, fetchImpl: typeof fetch, smtp?: SmtpTransport): ((message: MailMessage) => Promise<void>) | null {
+  if (env.gmailUser && env.gmailAppPassword) {
+    const gmail = env.gmailUser;
+    const transport =
+      smtp ??
+      nodemailer.createTransport({ host: "smtp.gmail.com", port: 465, secure: true, auth: { user: gmail, pass: env.gmailAppPassword } });
+    return async (m) => {
+      await transport.sendMail({
+        from: { name: m.fromName, address: gmail },
+        to: m.to,
+        subject: m.subject,
+        text: m.text,
+        ...(m.html ? { html: m.html } : {}),
+        attachments: m.attachments.map((a) => ({ filename: a.filename, content: Buffer.from(a.content), contentType: "audio/mpeg" })),
+      });
+    };
+  }
+  if (env.resendApiKey && env.alertEmailFrom) {
+    const { resendApiKey, alertEmailFrom } = env;
+    return async (m) => {
+      const res = await fetchImpl("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { authorization: `Bearer ${resendApiKey}`, "content-type": "application/json" },
+        body: JSON.stringify({
+          from: alertEmailFrom,
+          to: [m.to],
+          subject: m.subject,
+          text: m.text,
+          ...(m.html ? { html: m.html } : {}),
+          ...(m.attachments.length
+            ? { attachments: m.attachments.map((a) => ({ filename: a.filename, content: Buffer.from(a.content).toString("base64") })) }
+            : {}),
+        }),
+      });
+      if (!res.ok) throw new Error(`Resend responded ${res.status}`);
+    };
+  }
+  return null;
+}
+
+export function senderFromEnv(env: AppEnv, deps: { fetchImpl?: typeof fetch; smtp?: SmtpTransport } = {}): AlertSender {
   if (env.alertMode !== "live") return simulatedSender;
+  const fetchImpl = deps.fetchImpl ?? fetch;
+  const mail = mailerFromEnv(env, fetchImpl, deps.smtp);
   return {
     async send(alert, rendered) {
       if (alert.channel === "sms") {
@@ -295,31 +357,26 @@ export function senderFromEnv(env: AppEnv, fetchImpl: typeof fetch = fetch): Ale
         });
         return "sent";
       }
-      if (!env.resendApiKey || !env.alertEmailFrom) {
-        throw new Error("Email alerts need RESEND_API_KEY and ALERT_EMAIL_FROM");
+      if (!mail) {
+        throw new Error("Email alerts need GMAIL_USER and GMAIL_APP_PASSWORD (or RESEND_API_KEY and ALERT_EMAIL_FROM)");
       }
       let email = rendered;
-      const attachments: Array<{ filename: string; content: string }> = [];
+      const attachments: MailMessage["attachments"] = [];
       if (alert.kind !== "digest" && hasCallRecording(alert)) {
         const audio = await fetchRecording(alert, env, fetchImpl);
         // Retried by the next sweep (about a minute), so the audio usually makes it; after that, the email goes without.
         if (!audio && alert.attempts < RECORDING_WAIT_ATTEMPTS) throw new Error("call recording not ready yet; will retry");
-        if (audio) attachments.push({ filename: recordingFilename(alert), content: Buffer.from(audio).toString("base64") });
+        if (audio) attachments.push({ filename: recordingFilename(alert), content: audio });
         email = renderAlert(alert, env.publicBaseUrl, audio ? "attached" : "unavailable");
       }
-      const res = await fetchImpl("https://api.resend.com/emails", {
-        method: "POST",
-        headers: { authorization: `Bearer ${env.resendApiKey}`, "content-type": "application/json" },
-        body: JSON.stringify({
-          from: env.alertEmailFrom,
-          to: [alert.toAddress],
-          subject: email.subject,
-          text: email.body,
-          ...(email.html ? { html: email.html } : {}),
-          ...(attachments.length ? { attachments } : {}),
-        }),
+      await mail({
+        fromName: `${alert.companyKind === "front_desk" ? "Office line" : alert.companyName} (Lightline)`,
+        to: alert.toAddress,
+        subject: email.subject,
+        text: email.body,
+        ...(email.html ? { html: email.html } : {}),
+        attachments,
       });
-      if (!res.ok) throw new Error(`Resend responded ${res.status}`);
       return "sent";
     },
   };

@@ -25,9 +25,14 @@ services:
       # The server sweeps due jobs and alerts itself (instrumentation.ts).
       - key: JOB_SWEEP_SECONDS
         value: "60"
-      # "live" once Resend or A2P texting is approved; until then alerts show in the inbox only.
+      # "live" once the Gmail app password (or Resend) is set; until then alerts show in the inbox only.
       - key: ALERT_MODE
         value: simulate
+      # Lead emails go out through the business Gmail. Its app password is set on Render, never here.
+      - key: GMAIL_USER
+        value: thelightguysaustin@gmail.com
+      - key: GMAIL_APP_PASSWORD
+        sync: false
       - key: CRON_SECRET
         generateValue: true
       - key: FORM_SECRET

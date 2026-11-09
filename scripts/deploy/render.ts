@@ -42,8 +42,8 @@ export const RENDER_KEYS = [
   "ELEVENLABS_WEBHOOK_SECRET",
   "PUBLIC_BASE_URL",
 ] as const;
-/** Sent only once set: the alert senders, after A2P and Resend are approved. */
-export const OPTIONAL_RENDER_KEYS = ["TWILIO_ALERT_FROM", "RESEND_API_KEY", "ALERT_EMAIL_FROM"] as const;
+/** Sent only once set: the alert senders (texts after A2P; email through Gmail or Resend). */
+export const OPTIONAL_RENDER_KEYS = ["TWILIO_ALERT_FROM", "GMAIL_USER", "GMAIL_APP_PASSWORD", "RESEND_API_KEY", "ALERT_EMAIL_FROM"] as const;
 
 const FAILED = new Set(["build_failed", "update_failed", "canceled", "pre_deploy_failed", "deactivated"]);
 const DEPLOY_TIMEOUT_MS = 20 * 60_000;

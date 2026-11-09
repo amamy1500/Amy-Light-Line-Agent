@@ -17,6 +17,9 @@ export interface AppEnv {
   operatorToken: string | undefined;
   /** "live" sends real texts/emails; anything else records them as simulated. */
   alertMode: "live" | "simulate";
+  /** The Gmail account lead emails are sent from and its Google app password; used before Resend when both are set. */
+  gmailUser: string | undefined;
+  gmailAppPassword: string | undefined;
   resendApiKey: string | undefined;
   alertEmailFrom: string | undefined;
   /**
@@ -63,6 +66,9 @@ export function readEnv(source: NodeJS.ProcessEnv = process.env): AppEnv {
     pgliteDir: blank(source.PGLITE_DIR),
     operatorToken: blank(source.OPERATOR_TOKEN),
     alertMode: source.ALERT_MODE === "live" ? "live" : "simulate",
+    gmailUser: blank(source.GMAIL_USER),
+    // Google shows app passwords in four groups ("abcd efgh ijkl mnop"); the spaces are not part of it.
+    gmailAppPassword: blank(source.GMAIL_APP_PASSWORD)?.replace(/\s+/g, ""),
     resendApiKey: blank(source.RESEND_API_KEY),
     alertEmailFrom: blank(source.ALERT_EMAIL_FROM),
     agentProvider,

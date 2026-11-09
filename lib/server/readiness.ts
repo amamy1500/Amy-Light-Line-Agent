@@ -29,6 +29,8 @@ export interface ReadinessInput {
     | "databaseUrl"
     | "operatorToken"
     | "alertMode"
+    | "gmailUser"
+    | "gmailAppPassword"
     | "resendApiKey"
     | "alertEmailFrom"
     | "agentProvider"
@@ -93,9 +95,9 @@ export function readinessChecks(input: ReadinessInput): ReadinessCheck[] {
     input.alertContacts.email.length === 0
       ? check("alerts_email", "Email alerts", "missing", "No email address gets call alerts.", "Add the inbox Amy actually reads in Settings → Alerts.")
       : env.alertMode !== "live"
-        ? check("alerts_email", "Email alerts", "warn", `Recorded but not sent (simulate mode). Would go to ${input.alertContacts.email.join(", ")}.`, "Set ALERT_MODE=live with RESEND_API_KEY and ALERT_EMAIL_FROM.")
-        : !env.resendApiKey || !env.alertEmailFrom
-          ? check("alerts_email", "Email alerts", "missing", "Live mode is on but the email sender isn't set up.", "Set RESEND_API_KEY and ALERT_EMAIL_FROM.")
+        ? check("alerts_email", "Email alerts", "warn", `Recorded but not sent (simulate mode). Would go to ${input.alertContacts.email.join(", ")}.`, "Set ALERT_MODE=live with GMAIL_USER and GMAIL_APP_PASSWORD (or RESEND_API_KEY and ALERT_EMAIL_FROM).")
+        : !(env.gmailUser && env.gmailAppPassword) && !(env.resendApiKey && env.alertEmailFrom)
+          ? check("alerts_email", "Email alerts", "missing", "Live mode is on but the email sender isn't set up.", "Set GMAIL_USER and GMAIL_APP_PASSWORD (or RESEND_API_KEY and ALERT_EMAIL_FROM).")
           : check("alerts_email", "Email alerts", "ok", `Sent to ${input.alertContacts.email.join(", ")}.`),
 
     input.alertContacts.sms.length === 0
