@@ -342,6 +342,17 @@ export interface PendingAlert {
   siteVisit: string | null;
   /** yes / no / unsure: whether the home shows on Google Maps; "no" means a site visit to set up. */
   mapsVisible: string | null;
+  /** When the call came in, and the business's time zone to show it in; null for the daily summary. */
+  calledAt: Date | null;
+  timezone: string | null;
+  /** The call's recording: a voicemail on Twilio, or the assistant's conversation at the voice vendor. */
+  recordingUrl: string | null;
+  conversationId: string | null;
+  agentProvider: "elevenlabs" | "simulator" | null;
+  /** The caller asked not to be recorded: no audio goes out and no transcript was kept. */
+  recordingDeclined: boolean;
+  /** The assistant's conversations on the call, turn by turn, as stored after the call. */
+  transcript: Array<{ role: string; message?: string | null }> | null;
   /** The daily summary's numbers, or what an urgent alert is about. */
   detail: { held?: number; hours?: number; urgent?: UrgentKind; summary?: string } | null;
 }
@@ -376,6 +387,19 @@ export async function claimPendingAlerts(db: Queryable, limit = 20, maxAttempts 
             (select f.value from public.lead_fact_current f where f.lead_id = l.id and f.field = 'caller_email') as email,
             (select f.value from public.lead_fact_current f where f.lead_id = l.id and f.field = 'site_visit_window') as "siteVisit",
             (select f.value from public.lead_fact_current f where f.lead_id = l.id and f.field = 'maps_visible') as "mapsVisible",
+            ca.started_at as "calledAt",
+            (select bc.config ->> 'timezone' from public.business_config bc where bc.business_id = bz.id and bc.active) as timezone,
+            ca.recording_url as "recordingUrl",
+            s.conversation_id as "conversationId", s.provider as "agentProvider",
+            -- Every conversation on the call, in order: a missed hand-off has two, and the email shows both.
+            -- A declined recording stores JSON null, which must not reach jsonb_array_elements.
+            (select jsonb_agg(t.turn order by s2.started_at, t.n)
+               from public.agent_session s2,
+                    jsonb_array_elements(case when jsonb_typeof(s2.transcript) = 'array' then s2.transcript else '[]'::jsonb end)
+                      with ordinality t(turn, n)
+              where s2.call_id = cl.call_id) as transcript,
+            coalesce(exists (select 1 from public.event e where e.aggregate_id = ca.id and e.type = 'consent.recording_declined'), false)
+              as "recordingDeclined",
             cl.detail
        from claimed cl
        left join public.lead l on l.id = cl.lead_id
@@ -383,6 +407,9 @@ export async function claimPendingAlerts(db: Queryable, limit = 20, maxAttempts 
        left join public.campaign c on c.id = l.campaign_id
        left join public.brand b on b.id = c.brand_id
        left join public.call ca on ca.id = cl.call_id
+       -- The call's latest assistant conversation, whose audio goes with the email.
+       left join lateral (select conversation_id, provider from public.agent_session
+                           where call_id = cl.call_id order by started_at desc limit 1) s on true
       order by cl.created_at`,
     [limit, maxAttempts],
   );

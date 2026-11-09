@@ -39,6 +39,18 @@ export async function getConversation(input: Options & { conversationId: string 
   return (await res.json()) as Record<string, unknown>;
 }
 
+/**
+ * The call's audio as an MP3, both sides, as the vendor recorded it. Null while the
+ * vendor is still preparing it, or after it was deleted (the caller declined recording).
+ * https://elevenlabs.io/docs/api-reference/conversations/get-audio
+ */
+export async function getConversationAudio(input: Options & { conversationId: string }): Promise<Uint8Array | null> {
+  const res = await call(input, `/v1/convai/conversations/${encodeURIComponent(input.conversationId)}/audio`);
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`conversation audio responded ${res.status}`);
+  return new Uint8Array(await res.arrayBuffer());
+}
+
 function callSidIn(conversation: Record<string, unknown>): string | null {
   const vars = (conversation.conversation_initiation_client_data as { dynamic_variables?: Record<string, unknown> } | undefined)
     ?.dynamic_variables;

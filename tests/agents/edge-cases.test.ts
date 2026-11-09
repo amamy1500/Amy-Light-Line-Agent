@@ -141,7 +141,7 @@ describe("urgent alerts", () => {
     id: "x", kind: "urgent", channel, toAddress: "+15125550198", attempts: 1, leadId: "11111111-1111-4111-8111-111111111111",
     callId: null, brandName: "The Christmas Light Guys", campaignName: "TV", channelLabel: "tv", contactPhone: "+15125550147",
     contactName: "Nora", address: "41 Quarry Rd", serviceWanted: null, timing: null, callbackWindow: null, hasRecording: false,
-    companyName: "The Christmas Light Guys", companyKind: "company", summary: null, intent: "unknown", email: null, siteVisit: null, mapsVisible: null, detail,
+    companyName: "The Christmas Light Guys", companyKind: "company", summary: null, intent: "unknown", email: null, siteVisit: null, mapsVisible: null, calledAt: null, timezone: null, recordingUrl: null, conversationId: null, agentProvider: null, recordingDeclined: false, transcript: null, detail,
   });
 
   it("say URGENT and why, first thing, by text and by email", () => {

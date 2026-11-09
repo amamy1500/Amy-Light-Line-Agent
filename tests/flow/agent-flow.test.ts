@@ -3,7 +3,7 @@ import { VendorCircuit } from "@/lib/agents/circuit";
 import { simulatorConnector, type AgentConnector } from "@/lib/agents/connector";
 import { runTool, type GatewayDeps } from "@/lib/agents/gateway";
 import { parseBusinessConfig } from "@/lib/business-rules/config";
-import { seedChristmasLightGuys, type Queryable } from "@/lib/db";
+import { claimPendingAlerts, seedChristmasLightGuys, type Queryable } from "@/lib/db";
 import { getCallContext } from "@/lib/db/agent";
 import { activateConfig, loadActiveConfig } from "@/lib/db/config";
 import { openPglite } from "@/lib/db/pglite";
@@ -208,6 +208,17 @@ describe("the Amy-ignores-the-call demo", () => {
     expect(tasks.rows).toEqual([{ priority: "high", status: "open" }]);
     const alerts = await db.query<{ kind: string }>("select distinct kind from public.outbox where lead_id = $1 order by kind", [ctx.leadId]);
     expect(alerts.rows.map((r) => r.kind)).toEqual(["agent_lead", "transfer_missed"]);
+    // The lead email carries the call: when it came in, both conversations (Amy missed the hand-off) in order,
+    // and the latest one for its audio.
+    const leadAlert = (await claimPendingAlerts(db, 50)).find((a) => a.leadId === ctx.leadId && a.kind === "agent_lead")!;
+    expect(leadAlert).toMatchObject({ conversationId: `conv2_${call}`, agentProvider: "simulator", recordingDeclined: false, timezone: "America/Chicago" });
+    expect(leadAlert.calledAt).toBeInstanceOf(Date);
+    const stored = await db.query<{ sessions: string | number; turns: string | number }>(
+      "select count(*) as sessions, coalesce(sum(jsonb_array_length(transcript)), 0) as turns from public.agent_session where call_id = $1",
+      [ctx.callId],
+    );
+    expect(Number(stored.rows[0]!.sessions)).toBe(2);
+    expect(leadAlert.transcript).toHaveLength(Number(stored.rows[0]!.turns));
     const escalation = await db.query<{ n: string | number }>("select count(*) as n from public.job where kind = 'callback_escalation'");
     expect(Number(escalation.rows[0]!.n)).toBe(1);
 
@@ -368,6 +379,8 @@ describe("caller declines recording", () => {
     expect(lead.rows[0]).toMatchObject({ contact_name: "Dana", intent: "warm" });
     const purge = await db.query<{ status: string }>("select status from public.job where kind = 'vendor_purge' and subject_id = $1", [session]);
     expect(purge.rows[0]?.status).toBe("done"); // simulator session: nothing held at a vendor
+    const declinedAlert = (await claimPendingAlerts(db, 50)).find((a) => a.leadId === ctx.leadId && a.kind === "agent_lead")!;
+    expect(declinedAlert).toMatchObject({ recordingDeclined: true, transcript: null });
   });
 });
 
