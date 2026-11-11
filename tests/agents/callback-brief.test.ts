@@ -13,7 +13,7 @@ function lead(card: Partial<LeadCard>, facts: Array<Partial<FactRow>> = [], time
       contactPhone: "+15125550147", address: "88 Hidden Hills Dr, Dripping Springs", zip: null, serviceWanted: "roofline and two trees",
       timing: null, callbackWindow: "weekday mornings", mapsVisible: null, propertyType: "residential", customerType: "new", statedSource: null,
       summary: null, needsReview: false, compliance: { missing: ["caller_email", "outdoor_plugs"] }, openTaskId: null,
-      taskPriority: null, taskWindow: null, lastCallState: null, transferred: false, createdAt: AT, ...card,
+      taskPriority: null, taskWindow: null, lastCallState: null, lastCallAt: null, callCount: 0, transferred: false, createdAt: AT, ...card,
     },
     facts: facts.map((f) => ({ field: "notes", value: "", source: "caller_via_agent", createdAt: AT, current: true, ...f }) as FactRow),
     calls: [], sessions: [], tools: [], incidents: [],

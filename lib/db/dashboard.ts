@@ -77,6 +77,9 @@ export interface LeadCard {
   taskPriority: "high" | "normal" | null;
   taskWindow: string | null;
   lastCallState: CallState | null;
+  /** When the caller last called (null for a web form with no call), and how many calls the lead has. */
+  lastCallAt: Date | null;
+  callCount: number;
   transferred: boolean;
   createdAt: Date;
 }
@@ -90,14 +93,110 @@ const CARD_SELECT = `
          l.property_type as "propertyType", l.customer_type as "customerType", l.stated_source as "statedSource",
          l.summary, l.needs_review as "needsReview", l.compliance,
          t.id as "openTaskId", t.priority as "taskPriority", t.due_window as "taskWindow",
-         lc.state as "lastCallState",
+         lc.state as "lastCallState", lc.started_at as "lastCallAt",
+         (select count(*)::int from public.call x where x.lead_id = l.id) as "callCount",
          exists (select 1 from public.call x where x.lead_id = l.id and x.state = 'transferred') as transferred,
          l.created_at as "createdAt"
     from public.lead l
     join public.business bz on bz.id = l.business_id
     left join public.campaign c on c.id = l.campaign_id
     left join public.task t on t.lead_id = l.id and t.kind = 'callback' and t.status = 'open'
-    left join lateral (select x.state from public.call x where x.lead_id = l.id order by x.started_at desc limit 1) lc on true`;
+    left join lateral (select x.state, x.started_at from public.call x where x.lead_id = l.id order by x.started_at desc limit 1) lc on true`;
+
+// ---------------------------------------------------------------- the calls inbox
+
+/** The inbox tabs: who's waiting, who's been followed up, the outcomes, and the noise. */
+export type InboxView = "waiting" | "followed_up" | "won" | "lost" | "noise" | "all";
+export const INBOX_VIEWS: InboxView[] = ["waiting", "followed_up", "won", "lost", "noise", "all"];
+
+/** Quick filters that narrow any view. */
+export type InboxFilter = "hot" | "site_visit" | "price" | "business" | "returning";
+export const INBOX_FILTERS: InboxFilter[] = ["hot", "site_visit", "price", "business", "returning"];
+
+export type InboxSort = "priority" | "newest" | "oldest";
+export const INBOX_SORTS: InboxSort[] = ["priority", "newest", "oldest"];
+
+/** Which leads each tab holds. `l` is the lead, `t` its open callback (if any). Fixed SQL, never user text. */
+const VIEW_WHERE: Record<InboxView, string> = {
+  waiting: "t.id is not null",
+  followed_up: "t.id is null and l.state in ('attempted', 'connected', 'qualified', 'quoted', 'booked')",
+  won: "l.state = 'won'",
+  lost: "l.state = 'lost'",
+  // Spam, duplicates, and calls that left nothing a customer would say (held for the daily summary).
+  noise: "(l.state in ('spam', 'duplicate') or (t.id is null and l.state = 'new' and l.intent in ('not_a_lead', 'unknown')))",
+  all: "true",
+};
+
+const FILTER_WHERE: Record<InboxFilter, string> = {
+  hot: "l.intent = 'hot'",
+  site_visit: "exists (select 1 from public.lead_fact_current f where f.lead_id = l.id and f.field = 'maps_visible' and f.value = 'no')",
+  price: "coalesce((l.compliance -> 'summary' ->> 'priceAsked')::boolean, false)",
+  business: "l.property_type = 'commercial'",
+  returning: "l.customer_type = 'returning'",
+};
+
+const SORT_ORDER: Record<InboxSort, string> = {
+  // Open callbacks first, hottest first, then high priority, then newest: the order Amy works them in.
+  priority: `(t.id is not null) desc,
+             case l.intent when 'hot' then 0 when 'warm' then 1 when 'unknown' then 2 when 'cold' then 3 else 4 end,
+             (t.priority = 'high') desc nulls last, l.created_at desc`,
+  newest: "l.created_at desc",
+  oldest: "l.created_at asc",
+};
+
+export interface InboxQuery {
+  view: InboxView;
+  filters: InboxFilter[];
+  /** Matches name, address, what they want, the summary, or any 3+ digits of the phone number. */
+  search: string;
+  sort: InboxSort;
+  businessId: string | null;
+  limit?: number;
+}
+
+export interface Inbox {
+  leads: LeadCard[];
+  /** How many leads each tab holds under the same search and filters. */
+  counts: Record<InboxView, number>;
+  /** True when the view holds more than `limit` leads. */
+  truncated: boolean;
+}
+
+/** The calls inbox: one tab, narrowed by search and filters, in the chosen order, with every tab's count. */
+export async function inbox(db: Queryable, q: InboxQuery): Promise<Inbox> {
+  const limit = q.limit ?? 200;
+  const params: unknown[] = [q.businessId];
+  const where = ["($1::uuid is null or l.business_id = $1::uuid)"];
+  const search = q.search.trim().slice(0, 100);
+  if (search) {
+    params.push(`%${search.replace(/[\\%_]/g, (c) => `\\${c}`)}%`);
+    const text = `$${params.length}`;
+    const digits = search.replace(/\D/g, "");
+    let phone = "";
+    if (digits.length >= 3) {
+      params.push(`%${digits}%`);
+      phone = ` or regexp_replace(coalesce(l.contact_phone, ''), '[^0-9]', '', 'g') like $${params.length}`;
+    }
+    where.push(
+      `(l.contact_name ilike ${text} or l.address ilike ${text} or l.service_wanted ilike ${text} or l.summary ilike ${text}${phone})`,
+    );
+  }
+  for (const f of new Set(q.filters)) where.push(FILTER_WHERE[f]);
+  const base = where.join(" and ");
+
+  const [{ rows: leads }, { rows: countRows }] = await Promise.all([
+    db.query<LeadCard>(`${CARD_SELECT} where ${base} and ${VIEW_WHERE[q.view]} order by ${SORT_ORDER[q.sort]} limit ${limit + 1}`, params),
+    db.query<Record<InboxView, number | string>>(
+      `select ${INBOX_VIEWS.map((v) => `count(*) filter (where ${VIEW_WHERE[v]}) as "${v}"`).join(", ")}
+         from public.lead l
+         left join public.task t on t.lead_id = l.id and t.kind = 'callback' and t.status = 'open'
+        where ${base}`,
+      params,
+    ),
+  ]);
+  const counts = Object.fromEntries(INBOX_VIEWS.map((v) => [v, Number(countRows[0]?.[v] ?? 0)])) as Record<InboxView, number>;
+  return { leads: leads.slice(0, limit), counts, truncated: leads.length > limit };
+}
 
 /**
  * Who needs Amy now: open callbacks first (hot, then high priority), then

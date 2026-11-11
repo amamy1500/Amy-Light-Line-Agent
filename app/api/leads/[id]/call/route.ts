@@ -5,6 +5,7 @@ import { isOperator } from "@/lib/server/auth";
 import { getDb } from "@/lib/server/db";
 import { readEnv } from "@/lib/server/env";
 import { UUID } from "@/lib/server/forms";
+import { isPlaceholderNumber } from "@/lib/server/readiness";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -27,6 +28,11 @@ export async function POST(_req: Request, ctx: { params: Promise<{ id: string }>
   if (!target) return new Response("Not found", { status: 404 });
   if (!target.customerPhone) {
     page.searchParams.set("error", "There's no phone number on file for this caller.");
+    return NextResponse.redirect(page, 303);
+  }
+  // The ring phone is still the seed's stand-in (555): dialing it rings nobody (it failed live on 2026-11-09).
+  if (isPlaceholderNumber(target.ownerPhone)) {
+    page.searchParams.set("error", "Your cell isn't connected yet, so this can't ring you first. Add it under Settings → Owner & ring phone, or call them from your own phone.");
     return NextResponse.redirect(page, 303);
   }
 
