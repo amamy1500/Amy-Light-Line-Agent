@@ -25,9 +25,14 @@ services:
       # The server sweeps due jobs and alerts itself (instrumentation.ts).
       - key: JOB_SWEEP_SECONDS
         value: "60"
-      # "live" once the Gmail app password (or Resend) is set; until then alerts show in the inbox only.
+      # Live since 2026-11-10: lead emails go to thelightguysaustin@gmail.com through Resend.
       - key: ALERT_MODE
-        value: simulate
+        value: live
+      # Resend's shared sender delivers only to the account's own address until a domain is verified.
+      - key: ALERT_EMAIL_FROM
+        value: The Christmas Light Guys <onboarding@resend.dev>
+      - key: RESEND_API_KEY
+        sync: false
       # Lead emails go out through the business Gmail. Its app password is set on Render, never here.
       - key: GMAIL_USER
         value: thelightguysaustin@gmail.com
