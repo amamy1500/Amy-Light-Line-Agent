@@ -1,7 +1,9 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { VendorCircuit } from "@/lib/agents/circuit";
 import { simulatorConnector, type AgentConnector } from "@/lib/agents/connector";
+import { scanConversation } from "@/lib/agents/compliance";
 import { runTool, type GatewayDeps } from "@/lib/agents/gateway";
+import { NO_TRANSFER_LINE } from "@/lib/agents/lines";
 import { parseBusinessConfig } from "@/lib/business-rules/config";
 import { claimPendingAlerts, requeueLeadEmails, seedChristmasLightGuys, type PendingAlert, type Queryable } from "@/lib/db";
 import { getCallContext } from "@/lib/db/agent";
@@ -271,6 +273,26 @@ describe("failure paths never lose the caller", () => {
     const result = await tool(call, "transfer_to_amy", { summary: "wants Amy", reason: "caller_asked" }, NIGHT);
     expect(result.body).toMatchObject({ ok: false, transferring: false, why: "outside_hours" });
     expect(String(result.body.instruction)).toMatch(/request_callback/);
+  });
+
+  it("with transfers switched off, a caller who asks for Amy hears the warm callback line, never a ring", async () => {
+    const before = (await loadActiveConfig(db, businessId))!.config;
+    // The live setup (2026-11-10): the assistant answers first, and transfers are off until Amy's cell is connected.
+    const live = { ...before, ai: { ...before.ai, mode: "always" as const }, transfer: { ...before.transfer, enabled: false } };
+    await activateConfig(db, { tenantId, businessId, config: live, createdBy: "test" });
+    try {
+      const call = sid();
+      await handleInbound({ CallSid: call, From: caller(), To: TV }, voiceDeps(DAYTIME));
+      const result = await tool(call, "transfer_to_amy", { summary: "wants Amy", reason: "caller_asked" }, DAYTIME);
+      expect(result.body).toMatchObject({ ok: false, transferring: false });
+      const instruction = String(result.body.instruction);
+      expect(instruction).toContain(`Say: "${NO_TRANSFER_LINE}"`);
+      expect(NO_TRANSFER_LINE).not.toMatch(/Amy|Josh|minute|today|tonight/i); // names no one, promises no time
+      expect(scanConversation([{ role: "agent", text: NO_TRANSFER_LINE }]).violations).toEqual([]);
+      expect(handoffs).not.toContain(call);
+    } finally {
+      await activateConfig(db, { tenantId, businessId, config: before, createdBy: "test" });
+    }
   });
 
   it("kill switch: with AI off, an unanswered call goes to capture, never the agent", async () => {

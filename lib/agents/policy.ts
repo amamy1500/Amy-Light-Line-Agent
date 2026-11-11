@@ -9,7 +9,7 @@ import { dontGuessLine, MAPS_QUESTION, mapsHiddenLine, mapsUnsureLine, outsideHo
  * and not her sales reasoning (that comes later, from approved call
  * patterns). Any change here bumps POLICY_VERSION and must pass the evals.
  */
-export const POLICY_VERSION = "amy-policy-5.3.0";
+export const POLICY_VERSION = "amy-policy-5.4.0";
 
 /** Leak detector: if this string is ever spoken, the instructions leaked. */
 export const CANARY = "LIGHTLINE-CANARY-7Q2";
@@ -28,11 +28,12 @@ function selfIntro(config: BusinessConfig): string {
  */
 export function openingLine(config: BusinessConfig, entry: Entry, sharedLine: string[] = []): string {
   const owner = config.brand.ownerFirstName;
-  const callback = callbackName(config);
+  // Why it's recorded, in the same breath, so callers are at ease saying yes (Pavan, 2026-11-10). Only what's
+  // true: no promise about the vendors' copies beyond the purpose.
   const recorded =
     config.ai.recording === "disclosed"
-      ? "This call is recorded and transcribed by our AI service providers; just say so if you'd rather not."
-      : "This call is transcribed by our AI service providers.";
+      ? "This call is recorded and transcribed by our AI service providers, only to make sure our team gets your details right. Just say so if you'd rather not."
+      : "This call is transcribed by our AI service providers, only to make sure our team gets your details right.";
   if (entry === "handoff_failed") {
     return `Sorry about that, ${owner} couldn't pick up. You're back with the AI assistant, and I've kept everything you told me. What's the best time for a call back?`;
   }
@@ -49,14 +50,12 @@ export function openingLine(config: BusinessConfig, entry: Entry, sharedLine: st
       : `I'm ${selfIntro(config)}, an automated system, not a person.`;
   // Amy is named only when we know where she is: her phone rang, or she's on another call.
   // Answering first, or after hours, is the normal setup and says nothing about her (Amy, 2026-10-29).
+  // The recording line now says why details are taken ("so our team gets your details right"), which is what
+  // the old "happy to get a few details so our team knows how to help" sentence said; it went, to stay short.
   const why =
-    entry === "owner_unavailable"
-      ? `${owner}'s tied up at the moment, but I'd be happy to`
-      : entry === "owner_busy"
-        ? `${owner}'s on another call right now, but I'd be happy to`
-        : "I'd be happy to";
+    entry === "owner_unavailable" ? `${owner}'s tied up at the moment. ` : entry === "owner_busy" ? `${owner}'s on another call right now. ` : "";
   // Ends on the first question, so the caller knows it's their turn (first live call, 2026-10-29).
-  return `Hi, thank you for calling ${config.brand.spokenName}. ${whoIAm} ${recorded} ${why} get a few details so ${callback} knows how to help on the callback. What are you looking to have done?`;
+  return `Hi, thank you for calling ${config.brand.spokenName}. ${whoIAm} ${recorded} ${why}What are you looking to have done?`;
 }
 
 /** How to handle one company's callers; reaches the agent as {{company_context}} or from select_business. */
@@ -292,7 +291,7 @@ These go to {{owner_name}} directly.
 - Robocalls, recordings, sales pitches, vendors and wrong numbers: don't engage. One short, polite sentence, finish_call with spam, not_a_lead or wrong_number, and end within about 20 seconds. If you're not sure whether someone is a customer, treat them as one.
 ${options.sharedLine ? WHICH_COMPANY : ""}
 # Getting {{owner_name}}
-If the caller asks for {{owner_name}}, a manager, the owner or a person: say "Let me try {{owner_name}} for you, one moment." then call transfer_to_amy with a one-line summary (name, place, what they want). If it's refused, follow the instruction that comes back. A caller who asked for a person always ends with a callback; if they ask again after a miss, don't argue, just confirm it. Don't offer to try {{owner_name}} unless they ask.
+If the caller asks for {{owner_name}}, a manager, the owner or a person: call transfer_to_amy right away with a one-line summary (name, place, what they want), and say only what its answer tells you to say. Don't say you'll try anyone before it answers: putting callers through is often switched off. A caller who asked for a person always ends with a callback; if they ask again after a miss, don't argue, just confirm it. Don't offer to try {{owner_name}} unless they ask.
 
 # Language
 If the caller speaks Spanish or another language and you can answer in it, continue in their language with the same rules. When you switch to Spanish, first say: "Soy un asistente de inteligencia artificial, no una persona. Esta llamada se graba y se transcribe." If you can't switch, use simple English: get a name and number, and say "Le devolveremos la llamada." to Spanish speakers.

@@ -17,7 +17,7 @@ import type { Queryable } from "@/lib/db/migrate";
 import { findLineByCallSid, ownerOnCall, type UrgentKind } from "@/lib/db/repo";
 import { formatUsPhone, normalizeUsPhone } from "@/lib/telephony/phone";
 import { callbackChoice, callbackHoursNote, callbackQuestionFor, outsideCallbackHours } from "./callback-time";
-import { dontGuessLine, MAPS_QUESTION, mapsHiddenLine, mapsUnsureLine, outsideHoursLine, SAFETY_LINE } from "./lines";
+import { dontGuessLine, MAPS_QUESTION, mapsHiddenLine, mapsUnsureLine, NO_TRANSFER_LINE, outsideHoursLine, SAFETY_LINE } from "./lines";
 import { companyNotes } from "./policy";
 
 /**
@@ -469,17 +469,21 @@ export const TOOLS = {
   transfer_to_amy: define({
     description:
       "Try to connect the caller to the owner live. Use when the caller asks for the owner or a person, or is ready and wants to talk now. " +
-      "Pass a one-line summary (name, place, what they want). Before calling it, say you'll try them now.",
+      "Pass a one-line summary (name, place, what they want). Call it before saying anything about trying anyone: its answer says whether a transfer is possible and what to say.",
     input: z.strictObject({ summary: text(200), reason: z.enum(["caller_asked", "ready_to_buy", "complex_question"]) }),
     states: LIVE,
     async run(args, deps) {
       const owner = deps.config.brand.ownerFirstName;
+      // No live transfer: a warm callback offer that names no one and promises no time (Pavan, 2026-11-10).
+      // Callbacks go out in callback hours only, so "as soon as they can", never "in a few minutes".
       const refuse = (why: string) => ({
         outcome: "rejected" as const,
         body: {
           transferring: false,
           why,
-          instruction: `Say ${owner} can't come to the phone right now, that you've saved everything so they won't have to repeat it, and ask: "${callbackQuestionFor(deps.config)}" Then call request_callback.`,
+          instruction:
+            `Say: "${NO_TRANSFER_LINE}" ` +
+            `Then get what's still missing, without re-asking anything already said, and ask: "${callbackQuestionFor(deps.config)}" Then call request_callback.`,
         },
       });
       if (!transferAllowed(deps.config, deps.now, deps.ctx.transferAttempts)) {

@@ -7,6 +7,13 @@
 export const SAFETY_LINE = "If anyone is hurt, or anything is sparking or burning, please hang up and call 911 now.";
 
 /**
+ * A caller asked for a person and nobody can be put through (Pavan, 2026-11-10): sorry, stay a moment,
+ * a callback, thanks. Names no one and promises no time: callbacks go out in callback hours only.
+ */
+export const NO_TRANSFER_LINE =
+  "I'm sorry, I can't put you through directly from here. If you can stay with me for just a couple of moments, I'll take your details, and someone from our team will call you back as soon as they can. We really appreciate your patience. You're a valued customer, and your call matters to us.";
+
+/**
  * The Spanish greeting, used once a native speaker has checked these words
  * (Settings → Safety & languages). The disclosures are the same three as in
  * English (docs/research/legal-compliance.md §2.2).

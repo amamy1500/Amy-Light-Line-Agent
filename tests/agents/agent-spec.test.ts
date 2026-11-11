@@ -89,19 +89,18 @@ describe("agent spec", () => {
       expect(line).toContain("AI assistant, an automated system, not a person");
       expect(line).toContain("This call is recorded and transcribed");
       expect(line).toContain("by our AI service providers");
-      // Short enough to sit through: the greeting can't be talked over. Amy's callback
-      // sentence (2026-10-29) costs about 14 words; naming where Amy is, 7 more;
-      // ending on the first question saves the caller a turn, 7 more.
+      // Short enough to sit through: the greeting can't be talked over. Saying why it's recorded
+      // (2026-11-10) replaced the callback sentence, so it got shorter; naming where Amy is costs 6 more.
       const amyNamed = entry === "owner_unavailable" || entry === "owner_busy";
-      expect(line.split(/\s+/).length).toBeLessThanOrEqual(amyNamed ? 69 : 62);
+      expect(line.split(/\s+/).length).toBeLessThanOrEqual(amyNamed ? 62 : 56);
       expect(line).toMatch(/What are you looking to have done\?$/);
-      // Amy's approved words (2026-10-29 evening): "our team", never a name.
-      expect(line).toContain("so our team knows how to help on the callback");
+      // Why it's recorded, so callers are at ease saying yes; "our team", never a name.
+      expect(line).toContain("only to make sure our team gets your details right. Just say so if you'd rather not.");
       expect(scanConversation([{ role: "agent", text: line }]).violations).toEqual([]);
     }
     // Amy is named only when we know where she is (Amy, 2026-10-29).
-    expect(openingLine(config, "owner_unavailable")).toContain("Amy's tied up at the moment, but I'd be happy to get a few details");
-    expect(openingLine(config, "owner_busy")).toContain("Amy's on another call right now, but I'd be happy to get a few details");
+    expect(openingLine(config, "owner_unavailable")).toContain("Amy's tied up at the moment. What are you looking to have done?");
+    expect(openingLine(config, "owner_busy")).toContain("Amy's on another call right now. What are you looking to have done?");
     for (const entry of ["after_hours", "ai_first"] as Entry[]) expect(openingLine(config, entry)).not.toContain("Amy");
     expect(openingLine(config, "ai_first")).toMatch(/^Hi, thank you for calling The Christmas Light Guys\. I'm their AI assistant/);
     expect(openingLine(config, "handoff_failed")).toContain("You're back with the AI assistant");
