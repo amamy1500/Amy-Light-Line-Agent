@@ -94,8 +94,9 @@ describe("agent spec", () => {
       const amyNamed = entry === "owner_unavailable" || entry === "owner_busy";
       expect(line.split(/\s+/).length).toBeLessThanOrEqual(amyNamed ? 62 : 56);
       expect(line).toMatch(/What are you looking to have done\?$/);
-      // Why it's recorded, so callers are at ease saying yes; "our team", never a name.
-      expect(line).toContain("only to make sure our team gets your details right. Just say so if you'd rather not.");
+      // Why it's recorded, so callers are at ease; "our team", never a name; no opt-out invitation (Pavan, 2026-11-10).
+      expect(line).toContain("This call is recorded and transcribed by our AI service providers, so if I miss anything, our team can follow up and help you.");
+      expect(line).not.toMatch(/rather not|completely safe/);
       expect(scanConversation([{ role: "agent", text: line }]).violations).toEqual([]);
     }
     // Amy is named only when we know where she is (Amy, 2026-10-29).

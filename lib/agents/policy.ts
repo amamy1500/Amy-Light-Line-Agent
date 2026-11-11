@@ -9,7 +9,7 @@ import { dontGuessLine, MAPS_QUESTION, mapsHiddenLine, mapsUnsureLine, outsideHo
  * and not her sales reasoning (that comes later, from approved call
  * patterns). Any change here bumps POLICY_VERSION and must pass the evals.
  */
-export const POLICY_VERSION = "amy-policy-5.4.0";
+export const POLICY_VERSION = "amy-policy-5.4.1";
 
 /** Leak detector: if this string is ever spoken, the instructions leaked. */
 export const CANARY = "LIGHTLINE-CANARY-7Q2";
@@ -28,12 +28,15 @@ function selfIntro(config: BusinessConfig): string {
  */
 export function openingLine(config: BusinessConfig, entry: Entry, sharedLine: string[] = []): string {
   const owner = config.brand.ownerFirstName;
-  // Why it's recorded, in the same breath, so callers are at ease saying yes (Pavan, 2026-11-10). Only what's
-  // true: no promise about the vendors' copies beyond the purpose.
+  // Why it's recorded, in the same breath: so the team can step in if the assistant misses something (Pavan,
+  // 2026-11-10). Only what's true: no "completely safe", since the vendors keep copies. The spoken opt-out ("just say
+  // so if you'd rather not") was dropped on Pavan's call, told that it strengthens consent in all-party states
+  // (legal-compliance.md §3.5); the notice still comes first, and a caller who objects is still honoured
+  // (recording_declined).
   const recorded =
     config.ai.recording === "disclosed"
-      ? "This call is recorded and transcribed by our AI service providers, only to make sure our team gets your details right. Just say so if you'd rather not."
-      : "This call is transcribed by our AI service providers, only to make sure our team gets your details right.";
+      ? "This call is recorded and transcribed by our AI service providers, so if I miss anything, our team can follow up and help you."
+      : "This call is transcribed by our AI service providers, so if I miss anything, our team can follow up and help you.";
   if (entry === "handoff_failed") {
     return `Sorry about that, ${owner} couldn't pick up. You're back with the AI assistant, and I've kept everything you told me. What's the best time for a call back?`;
   }
