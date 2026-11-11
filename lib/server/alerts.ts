@@ -24,7 +24,7 @@ const HEADLINE: Record<AlertKind, (who: string) => string> = {
   abandoned: (who) => `Missed call from ${who} (no message left)`,
   answered: (who) => `You took a call from ${who}`,
   web_form: (who) => `Quote request from ${who}`,
-  agent_lead: (who) => `Your assistant took a call from ${who}`,
+  agent_lead: (who) => `New customer call from ${who}`,
   callback: (who) => `Still waiting for your callback: ${who}`,
   transfer_missed: (who) => `${who} asked for you and you couldn't pick up`,
   review: (who) => `Check what the assistant said to ${who}`,
@@ -72,7 +72,7 @@ export function renderAlert(alert: PendingAlert, baseUrl: string, recording?: Re
   const action = alert.kind === "answered" ? "Log the outcome" : alert.kind === "review" ? "Review" : "Call back";
   const subject = `${line}: ${HEADLINE[alert.kind](who)}${alert.mapsVisible === "no" ? " (site visit to schedule)" : ""}`;
 
-  if (alert.channel === "email") return renderEmail(alert, { subject, urgent, action, link, recording });
+  if (alert.channel === "email") return renderEmail(alert, { subject, company, urgent, action, link, recording });
 
   let body = `${subject}.${details ? ` ${details}.` : ""} ${action}: ${link}`;
   if (body.length > SMS_LIMIT) {
@@ -86,6 +86,7 @@ export function renderAlert(alert: PendingAlert, baseUrl: string, recording?: Re
 
 interface EmailParts {
   subject: string;
+  company: string;
   urgent: string | null;
   action: string;
   link: string;
@@ -93,6 +94,14 @@ interface EmailParts {
 }
 
 type Row = { label: string; text: string; html?: string };
+
+/** The line under the subject that says what to do, for the alerts that ask Amy to call someone back. */
+function introLine(alert: PendingAlert, company: string): string | null {
+  const when = alert.callbackWindow ? ` ${alert.callbackWindow}` : " soon";
+  if (alert.kind === "agent_lead") return `A new customer called ${company}, and the assistant took their details. Please give them a call back${when}.`;
+  if (alert.kind === "message") return `A customer left a voicemail for ${company}. Please give them a call back${when}.`;
+  return null;
+}
 
 /** The call's own audio exists somewhere we can fetch it: a voicemail, or the assistant's conversation. */
 export function hasCallRecording(alert: PendingAlert): boolean {
@@ -158,6 +167,7 @@ function renderEmail(alert: PendingAlert, parts: EmailParts): RenderedAlert {
     ...(alert.timing ? [{ label: "Timing", text: alert.timing }] : []),
     ...(alert.email ? [{ label: "Email", text: alert.email }] : []),
   ];
+  const intro = introLine(alert, parts.company);
   const called = calledAtText(alert);
   const recording = recordingLine(alert, parts.recording);
   const turns = conversation(alert);
@@ -165,6 +175,7 @@ function renderEmail(alert: PendingAlert, parts: EmailParts): RenderedAlert {
   const rowsText = (rows: Row[]) => rows.map((r) => `${r.label}: ${r.text}`);
   const body = [
     `${parts.subject}.`,
+    ...(intro ? ["", intro] : []),
     ...(parts.urgent ? ["", `Why it's urgent: ${parts.urgent}`] : []),
     "",
     "CALL BACK",
@@ -190,6 +201,7 @@ function renderEmail(alert: PendingAlert, parts: EmailParts): RenderedAlert {
   const html = [
     `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.45;color:#202124;max-width:640px">`,
     `<p style="margin:0 0 4px;font-size:18px;font-weight:700">${escapeHtml(parts.subject)}</p>`,
+    ...(intro ? [`<p style="margin:8px 0 0">${escapeHtml(intro)}</p>`] : []),
     ...(parts.urgent
       ? [`<p style="margin:12px 0;padding:10px 14px;background:#fce8e6;border-radius:8px;color:#a50e0e;font-weight:700">Why it's urgent: ${escapeHtml(parts.urgent)}</p>`]
       : []),

@@ -50,7 +50,10 @@ function network(audio: { status: number; bytes?: Uint8Array }) {
 describe("the lead email", () => {
   it("puts who to call back and when first, then the job, what happened, and the conversation", () => {
     const { subject, body, html } = renderAlert(lead(), BASE);
-    expect(subject).toMatch(/^The Christmas Light Guys · .*Your assistant took a call from Sam Patel, \(512\) 555-0147$/);
+    expect(subject).toMatch(/^The Christmas Light Guys · .*New customer call from Sam Patel, \(512\) 555-0147$/);
+    expect(body.split("\n")[2]).toBe(
+      "A new customer called The Christmas Light Guys, and the assistant took their details. Please give them a call back this afternoon.",
+    );
     expect(body.indexOf("CALL BACK")).toBeLessThan(body.indexOf("THE JOB"));
     expect(body).toContain("Phone: (512) 555-0147\nBest time to call: this afternoon");
     expect(body).toContain("Address: 2014 Robs Glen, Austin, Texas 78704");
